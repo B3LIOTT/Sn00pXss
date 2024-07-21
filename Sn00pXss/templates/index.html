@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My App</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="main-title">
+      <h1>Sn00pXss</h1>
+    </div>
+    <div class="ngrok">
+      <h2>Ngrok</h2>
+      <p>{{ngrok}}</p>
+    </div>
+    <div class="bin">
+      {% for bin in bins %}
+    <div class="dynamic-div">
+        <h2>{{ bin.title }}</h2>
+        <p>{{ bin.description }}</p>
+    </div>
+    {% endfor %}
+    </div>
+  </body>
+</html>

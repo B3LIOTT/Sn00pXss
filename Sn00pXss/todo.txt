@@ -1,0 +1,11 @@
+- gunicorn
+
+- payloads all the things
+
+
+quand on ajoute un payload on fait:
+- expected = ...
+- got = ...
+
+et si le expected != got alors on a potentiellement une XSS
+    => si on a une potentielle xss, on test des payloads, et on regarde le comportement
