@@ -1,4 +1,4 @@
-from modules.vuln_detector import detect_xss
+from modules.vuln_detector import detect_dom_xss
 from models import RequestModel, AttackType
 from modules.requestor import Requestor
 
@@ -14,6 +14,6 @@ if __name__ == '__main__':
 
     rm.add_attackType(attackType=AttackType.DOM)
 
-    print(detect_xss(requestor=requestor, requestModel=rm))
+    print(detect_dom_xss(requestor=requestor, requestModel=rm))
 
     requestor.dispose()
