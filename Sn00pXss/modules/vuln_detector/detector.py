@@ -21,9 +21,9 @@ def detect_xss(requestor: Requestor, requestModel: RequestModel):
         assert(requestModel.is_vector_defined())
 
         driver = requestor.send_request(requestModel=requestModel)
-        number_input = driver.find_element(requestModel.vector.type, requestModel.vector.value)
-        number_input.send_keys(requestModel.payload)    
-        number_input.send_keys(Keys.ENTER)
+        input = driver.find_element(requestModel.vector.type, requestModel.vector.value)
+        input.send_keys(requestModel.payload)    
+        input.send_keys(Keys.ENTER)
 
     except Exception as e:
         error(funcName="detect_dom_xss", message=f"Error : {e}")

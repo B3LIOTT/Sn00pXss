@@ -15,14 +15,15 @@ if __name__ == '__main__':
         url=url,
         affects=url,
     )
-    
+
     vector = AttackVector(type=By.NAME, value='number')
     rm.set_vector(vector=vector)
     rm.add_attackType(attackType=AttackType.DOM)
 
     # detect filters
-    fc = detect_filters(requestor=requestor, requestModel=rm)
+    fc, ft = detect_filters(requestor=requestor, requestModel=rm)
     print(f"\nLes caractères filtrés sont : {fc}")
+    print(f"Les tags html filtrés sont : {ft}")
 
     # attack
     rm.set_payload(payload=TEST_PAYLOAD)
