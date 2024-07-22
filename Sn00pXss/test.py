@@ -1,4 +1,5 @@
 from modules.vuln_detector import detect_xss
+from modules.filter_detector import detect_filters
 from models import RequestModel, AttackType, AttackVector
 from selenium.webdriver.common.by import By
 from modules.requestor import Requestor
@@ -15,10 +16,15 @@ if __name__ == '__main__':
         affects=url,
     )
     vector = AttackVector(type=By.NAME, value='number')
-    rm.set_payload(payload=TEST_PAYLOAD)
     rm.set_vector(vector=vector)
     rm.add_attackType(attackType=AttackType.DOM)
 
+    # detect filters
+    fc = detect_filters(requestor=requestor, requestModel=rm)
+    print(f"Les caractères filtrés sont : {fc}")
+
+    # attack
+    rm.set_payload(payload=TEST_PAYLOAD)
     detect_xss(requestor=requestor, requestModel=rm)
 
     requestor.dispose()

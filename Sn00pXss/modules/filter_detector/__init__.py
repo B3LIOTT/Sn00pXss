@@ -1,0 +1,1 @@
+from .filter_detector import detect_filters
