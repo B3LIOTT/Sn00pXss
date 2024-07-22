@@ -21,7 +21,7 @@ if __name__ == '__main__':
 
     # detect filters
     fc = detect_filters(requestor=requestor, requestModel=rm)
-    print(f"Les caractères filtrés sont : {fc}")
+    print(f"\nLes caractères filtrés sont : {fc}")
 
     # attack
     rm.set_payload(payload=TEST_PAYLOAD)

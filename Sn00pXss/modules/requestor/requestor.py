@@ -11,11 +11,11 @@ class Requestor:
     """
 
     def __init__(self):
-        geko_driver_path = '/home/b3liott/Documents/Misc/chromedriver-linux64/chromedriver'  # TODO: put this in a yaml config file
+        chrome_driver_path = '/home/b3liott/Documents/Misc/chromedriver-linux64/chromedriver'  # TODO: put this in a yaml config file
         options = Options()
         options.binary_location = '/home/b3liott/Documents/Misc/chrome-linux64/chrome'
         options.add_argument("--headless")
-        service = Service(geko_driver_path)
+        service = Service(chrome_driver_path)
 
         self.driver = webdriver.Chrome(service=service, options=options)
         
@@ -25,8 +25,8 @@ class Requestor:
             if url is None:
                 url = requestModel.url
           
-            self.driver.get(url)  # TODO: remove this line
-
+            self.driver.get(url)
+            
             # set cookies
             if requestModel.cookies is not None:
                 for cookie in requestModel.cookies:
