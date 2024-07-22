@@ -9,3 +9,9 @@ quand on ajoute un payload on fait:
 
 et si le expected != got alors on a potentiellement une XSS
     => si on a une potentielle xss, on test des payloads, et on regarde le comportement
+
+
+Pour le vecteur dans le dom html
+- verifier si on peut injecter des balises html (tester avec une toute simple comme objet ou a ou h1)
+ => si oui, continuer en regardant les balises interessantes
+ => si non, on abandonne, on passe au prochain vecteur

@@ -30,7 +30,7 @@ HTML_TAGS = [
 ]
 
 USEFUL_JS_FUNCTION = [
-    'alert', 'fetch', 'prompt', 'confirm', 'document.write', 'document.writeln', 'document.writeIn', 'document.createElement'
+    'alert', 'fetch', 'document.write', 'document.writeln', 'document.writeIn', 'document.createElement'
 ]
 
 
