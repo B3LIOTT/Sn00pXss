@@ -4,34 +4,38 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoAlertPresentException
 from models import RequestModel
-from modules.logger import info
+from modules.logger import info, error
 from time import sleep
 
 
 TEST_INPUT = "!!ABCDEFGHTESTHGFEDCBA!!"
 
-TEST_PAYLOAD = """'; alert("xss dom based"); var cat= ' """
 
-
-def detect_dom_xss(requestor: Requestor, requestModel: RequestModel):
+def detect_xss(requestor: Requestor, requestModel: RequestModel):
     """
-    Try to detect if the website is vulnerable to DOM based XSS
+    Try to detect if the website is vulnerable to XSS
     """
     
-    driver = requestor.send_request(requestModel=requestModel)
+    try:
+        assert(requestModel.is_payload_defined())
+        assert(requestModel.is_vector_defined())
 
-    number_input = driver.find_element(By.NAME, 'number')
+        driver = requestor.send_request(requestModel=requestModel)
+        number_input = driver.find_element(requestModel.vector.type, requestModel.vector.value)
+        number_input.send_keys(requestModel.payload)    
+        number_input.send_keys(Keys.ENTER)
 
-    number_input.send_keys(TEST_PAYLOAD)    
+    except Exception as e:
+        error(funcName="detect_dom_xss", message=f"Error : {e}")
+        return
 
-    number_input.send_keys(Keys.ENTER)
-
-    sleep(1)
+    # wait for the page to load
+    #sleep(1)
 
     # check if alert is present
     try:
         driver.switch_to.alert.accept()
-        info(message=f"Alerte détectée avec : {TEST_PAYLOAD}\n")
+        info(message=f"Alerte détectée avec : {requestModel.payload}\n")
         
     except NoAlertPresentException:
         info(message="Aucune alerte détectée")
