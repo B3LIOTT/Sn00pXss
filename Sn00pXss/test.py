@@ -15,6 +15,7 @@ if __name__ == '__main__':
         url=url,
         affects=url,
     )
+    
     vector = AttackVector(type=By.NAME, value='number')
     rm.set_vector(vector=vector)
     rm.add_attackType(attackType=AttackType.DOM)

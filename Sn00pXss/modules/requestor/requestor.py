@@ -26,7 +26,7 @@ class Requestor:
                 url = requestModel.url
           
             self.driver.get(url)
-            
+
             # set cookies
             if requestModel.cookies is not None:
                 for cookie in requestModel.cookies:
@@ -42,7 +42,7 @@ class Requestor:
             exit(1)
 
 
-    def verify_reflected(self, requestModel: RequestModel) -> webdriver:
+    def get_affected(self, requestModel: RequestModel) -> webdriver:
         return self.send_request(requestModel=requestModel, url=requestModel.affects)
 
 
