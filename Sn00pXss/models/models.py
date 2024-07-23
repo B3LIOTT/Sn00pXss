@@ -68,8 +68,4 @@ class FilterModel:
         self.filteredTags = filteredTags
 
     def __str__(self):
-        print("Filtres :")
-        print(f"Chars : {self.filteredChars}")
-        print(f"Tags : {self.filteredTags}")
-        print(f"Funcs : {self.filteredFuncs}")
-        print()
+        return f"FilteredChars : {self.filteredChars}\nFilteredFuncs : {self.filteredFuncs}\nFilteredTags : {self.filteredTags}"

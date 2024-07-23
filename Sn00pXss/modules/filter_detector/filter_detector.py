@@ -94,7 +94,8 @@ def detect_filters(requestor: Requestor, requestModel: RequestModel) -> FilterMo
         '>': [char for char in SPECIAL_CHARS['for_html_tags']['>'] if char not in filtered_chars],
         '/': [char for char in SPECIAL_CHARS['for_html_tags']['/'] if char not in filtered_chars],
     }
-    info(message=f"\nLes caractères utilisables pour les balises html sont : {usable_html_tags_chars}")
+
+    info(message=f"Les caractères utilisables pour les balises html sont : {usable_html_tags_chars}")
 
     # get filtered html tags
     filtered_tags = None
