@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
     vector = AttackVector(type=By.NAME, value='number')
     rm.set_vector(vector=vector)
-    rm.set_attackType(attackType=AttackType.DOM)
+    rm.set_attackType(attackType=AttackType.ESCAPE_JS)
 
     # detect filters
     filterModel = detect_filters(requestor=requestor, requestModel=rm)

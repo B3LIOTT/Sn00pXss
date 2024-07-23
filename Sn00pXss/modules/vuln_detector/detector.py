@@ -4,12 +4,14 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoAlertPresentException
 from models import RequestModel, FilterModel, Payload, PayloadType
 from modules.requestor.requestor import Requestor
-from modules.logger import info, error
+from modules.logger import info, error, bingo, warn
 from time import sleep
 
 
 TEST_INPUT = "!!ABCDEFGHTESTHGFEDCBA!!"
-TEST_PAYLOAD = Payload(value="""'; alert("xss dom based"); var cat= ' """, payloadType=PayloadType.ALERT)
+TEST_PAYLOADS = {
+    "ESCAPE_JS": [Payload(value="""'; alert("xss dom based"); var cat= ' """, payloadType=PayloadType.ALERT)]
+}
 
 # faire une BDD qui contient des payloads par type alert ou request bin
 # comme ca on sait si on doit checker la request bin ou l'alerte
@@ -19,15 +21,16 @@ def fuzz(requestor: Requestor, requestModel: RequestModel, filterModel: FilterMo
     """
     Tests given set of payloads 
     """
-    for payload in [TEST_PAYLOAD]: # TODO
+    for payload in TEST_PAYLOADS[requestModel.attackType.value]: # TODO
         try:
+            info(message=f"Testing payload : {payload.value}")
             driver = requestor.send_request(requestModel=requestModel)
             input = driver.find_element(requestModel.vector.type, requestModel.vector.value)
-            input.send_keys(payload)    
+            input.send_keys(payload.value)    
             input.send_keys(Keys.ENTER)
 
         except Exception as e:
-            error(funcName="detect_dom_xss", message=f"Error for {payload}: {e}")
+            error(funcName="fuzz", message=f"Error for {payload.value}: {e}")
             continue
 
         # wait for the page to load
@@ -41,10 +44,10 @@ def fuzz(requestor: Requestor, requestModel: RequestModel, filterModel: FilterMo
             # check if alert is present
             try:
                 driver.switch_to.alert.accept()
-                info(message=f"Alerte détectée avec : {requestModel.payload}\n")
+                bingo(message=f"Alerte détectée avec : {payload.value}\n")
                 
             except NoAlertPresentException:
-                info(message="Aucune alerte détectée")
+                warn(message="Aucune alerte détectée")
         
         else:
             # check request bin

@@ -1,6 +1,6 @@
 from .utils import *
 from modules.requestor import Requestor
-from modules.logger import info, error
+from modules.logger import info, error, warn, bingo
 from models import RequestModel, FilterModel
 from selenium.webdriver.common.keys import Keys
 from time import sleep
@@ -19,16 +19,15 @@ def detect_char_filters(requestor: Requestor, requestModel: RequestModel):
             try:
                 # send the request
                 payload = f"{char}{TEST_INPUT}{char}"
-                requestModel.set_payload(payload=payload)
                 driver = requestor.send_request(requestModel=requestModel)
                 input = driver.find_element(requestModel.vector.type, requestModel.vector.value)
-                input.send_keys(requestModel.payload)    
+                input.send_keys(payload)    
                 input.send_keys(Keys.ENTER)
 
                 # check if the char is filtered
                 if payload not in driver.page_source:
                     filtered_chars.append(char)
-                    info(message=f"Le caractère {char} est filtré")
+                    warn(message=f"Le caractère {char} est filtré")
                 else:
                     info(message=f"Le caractère {char} n'est pas filtré")
 
@@ -50,19 +49,18 @@ def detect_html_tags_filters(requestor: Requestor, requestModel: RequestModel, u
             # send the request
             payload = f"{usable_chars['<'][0]}{tag}{usable_chars['>'][0]}{TEST_INPUT}{usable_chars['<'][0]}{usable_chars['/'][0]}{tag}{usable_chars['>'][0]}"
             raw_payload = f"<{tag}>{TEST_INPUT}</{tag}>"
-            requestModel.set_payload(payload=payload)
             driver = requestor.send_request(requestModel=requestModel)
             input = driver.find_element(requestModel.vector.type, requestModel.vector.value)
-            input.send_keys(requestModel.payload)    
+            input.send_keys(payload)    
             input.send_keys(Keys.ENTER)
 
             # check if the tag is filtered
             if (payload not in driver.page_source) and (raw_payload not in driver.page_source):
                 filtered_tags.append(tag)
-                info(message=f"La balise {tag} est filtrée")
+                warn(message=f"La balise {tag} est filtrée")
 
             else:
-                if raw_payload in driver.page_source: info(message=f"La balise {tag} est interprétée !!!")
+                if raw_payload in driver.page_source: bingo(message=f"La balise {tag} est interprétée !!!")
                 else: info(message=f"La balise {tag} n'est pas filtrée")
                 
 

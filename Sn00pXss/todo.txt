@@ -15,3 +15,6 @@ Pour le vecteur dans le dom html
 - verifier si on peut injecter des balises html (tester avec une toute simple comme objet ou a ou h1)
  => si oui, continuer en regardant les balises interessantes
  => si non, on abandonne, on passe au prochain vecteur
+
+
+sauvegarder les filtres et les payloads fonctionnels dans un fichier lié au lien, comme sqlmap
