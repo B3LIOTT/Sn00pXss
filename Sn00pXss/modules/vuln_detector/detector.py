@@ -3,7 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoAlertPresentException
-from models import RequestModel
+from models import RequestModel, FilterModel
 from modules.logger import info, error
 from time import sleep
 
@@ -11,10 +11,27 @@ from time import sleep
 TEST_INPUT = "!!ABCDEFGHTESTHGFEDCBA!!"
 
 
-def detect_xss(requestor: Requestor, requestModel: RequestModel):
+def inject_payload_JS(driver: webdriver, requestModel: RequestModel, filterModel: FilterModel):
+    """
+    Try to inject the payload in the javascript (~= escape with ' or ")
+    """
+    pass
+
+def inject_payload_HTML(driver: webdriver, requestModel: RequestModel, filterModel: FilterModel):
+    """
+    Try to inject the payload in the html (~= add tags with <> and </>)
+    """
+    pass
+
+
+def detect_xss(requestor: Requestor, requestModel: RequestModel, filterModel: FilterModel):
     """
     Try to detect if the website is vulnerable to XSS
     """
+
+    # TODO: d'abord vérifier si on veut injecter dans le js ou dans le html
+    # si html, on utilise <> et </> pour les balises
+    # sinon il faut échapper le js avec ' ou " ...
     
     try:
         assert(requestModel.is_payload_defined())

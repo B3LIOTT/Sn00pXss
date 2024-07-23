@@ -48,7 +48,7 @@ def random_case(word: str) -> str:
             buffer += char.upper()
             break
         
-        # pick a random case
+        # pick a random case for alphabetic characters
         if char.isalpha():
             if random.randint(0, 1) == 1:
                 buffer += char.upper()

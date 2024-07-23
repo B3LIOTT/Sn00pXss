@@ -62,6 +62,14 @@ class FilterModel:
     This class defines the supposed filters used to prevent XSS from the target.
     """
 
-    def __init__(self, filteredChars: list, filteredFuncs: list):
+    def __init__(self, filteredChars: list, filteredFuncs: list, filteredTags: list=None):
         self.filteredChars = filteredChars
         self.filteredFuncs = filteredFuncs
+        self.filteredTags = filteredTags
+
+    def __str__(self):
+        print("Filtres :")
+        print(f"Chars : {self.filteredChars}")
+        print(f"Tags : {self.filteredTags}")
+        print(f"Funcs : {self.filteredFuncs}")
+        print()
