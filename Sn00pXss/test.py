@@ -23,9 +23,9 @@ if __name__ == '__main__':
     # detect filters
     filterModel = detect_filters(requestor=requestor, requestModel=rm)
     print(filterModel)
-    
+
     # attack
     rm.set_payload(payload=TEST_PAYLOAD)
-    detect_xss(requestor=requestor, requestModel=rm)
+    detect_xss(requestor=requestor, requestModel=rm, filterModel=filterModel)
 
     requestor.dispose()
