@@ -49,7 +49,7 @@ class RequestModel:
         return self.payload is not None
 
 
-    def add_attackType(self, attackType: AttackType):
+    def set_attackType(self, attackType: AttackType):
         self.attackType = attackType
 
     def is_attackType_defined(self):

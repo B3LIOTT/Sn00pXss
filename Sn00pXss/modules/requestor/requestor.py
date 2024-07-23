@@ -3,6 +3,11 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from models import RequestModel
 from modules.logger import error
+import os
+import dotenv
+
+
+dotenv.load_dotenv()
 
 
 class Requestor:
@@ -11,9 +16,9 @@ class Requestor:
     """
 
     def __init__(self):
-        chrome_driver_path = '/home/b3liott/Documents/Misc/chromedriver-linux64/chromedriver'  # TODO: put this in a yaml config file
+        chrome_driver_path = os.getenv("CHROME_DRIVER_PATH")
         options = Options()
-        options.binary_location = '/home/b3liott/Documents/Misc/chrome-linux64/chrome'
+        options.binary_location = os.getenv("CHROME_BINARY_PATH")
         options.add_argument("--headless")
         service = Service(chrome_driver_path)
 

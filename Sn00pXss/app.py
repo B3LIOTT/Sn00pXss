@@ -3,6 +3,9 @@ from pyngrok import ngrok
 from Sn00pXss.modules.request_bin.request_bin import RequestBin
 
 
+__author__ = "b3liott"
+
+
 app = Flask(__name__)
 
 
