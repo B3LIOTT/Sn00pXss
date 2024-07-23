@@ -21,9 +21,9 @@ def detect_char_filters(requestor: Requestor, requestModel: RequestModel):
                 payload = f"{char}{TEST_INPUT}{char}"
                 requestModel.set_payload(payload=payload)
                 driver = requestor.send_request(requestModel=requestModel)
-                number_input = driver.find_element(requestModel.vector.type, requestModel.vector.value)
-                number_input.send_keys(requestModel.payload)    
-                number_input.send_keys(Keys.ENTER)
+                input = driver.find_element(requestModel.vector.type, requestModel.vector.value)
+                input.send_keys(requestModel.payload)    
+                input.send_keys(Keys.ENTER)
 
                 # check if the char is filtered
                 if payload not in driver.page_source:
@@ -52,9 +52,9 @@ def detect_html_tags_filters(requestor: Requestor, requestModel: RequestModel, u
             raw_payload = f"<{tag}>{TEST_INPUT}</{tag}>"
             requestModel.set_payload(payload=payload)
             driver = requestor.send_request(requestModel=requestModel)
-            number_input = driver.find_element(requestModel.vector.type, requestModel.vector.value)
-            number_input.send_keys(requestModel.payload)    
-            number_input.send_keys(Keys.ENTER)
+            input = driver.find_element(requestModel.vector.type, requestModel.vector.value)
+            input.send_keys(requestModel.payload)    
+            input.send_keys(Keys.ENTER)
 
             # check if the tag is filtered
             if (payload not in driver.page_source) and (raw_payload not in driver.page_source):
@@ -105,6 +105,9 @@ def detect_filters(requestor: Requestor, requestModel: RequestModel) -> FilterMo
             requestModel=requestModel, 
             usable_chars=usable_html_tags_chars
         )
+
+        # if len(filtered_tags) > 0:
+        #     # TODO: demander a l'utilisateur si il veut essayer avec des balises alternatives, en majuscules, etc...
 
     filtered_funcs = detect_func_filters(requestor=requestor, requestModel=requestModel)
 

@@ -1,61 +1,71 @@
-from modules.requestor.requestor import Requestor
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoAlertPresentException
-from models import RequestModel, FilterModel
+from models import RequestModel, FilterModel, Payload, PayloadType
+from modules.requestor.requestor import Requestor
 from modules.logger import info, error
 from time import sleep
 
 
 TEST_INPUT = "!!ABCDEFGHTESTHGFEDCBA!!"
+TEST_PAYLOAD = Payload(value="""'; alert("xss dom based"); var cat= ' """, payloadType=PayloadType.ALERT)
+
+# faire une BDD qui contient des payloads par type alert ou request bin
+# comme ca on sait si on doit checker la request bin ou l'alerte
 
 
-def inject_payload_JS(driver: webdriver, requestModel: RequestModel, filterModel: FilterModel):
+def fuzz(requestor: Requestor, requestModel: RequestModel, filterModel: FilterModel):
     """
-    Try to inject the payload in the javascript (~= escape with ' or ")
+    Tests given set of payloads 
     """
-    pass
+    for payload in [TEST_PAYLOAD]: # TODO
+        try:
+            driver = requestor.send_request(requestModel=requestModel)
+            input = driver.find_element(requestModel.vector.type, requestModel.vector.value)
+            input.send_keys(payload)    
+            input.send_keys(Keys.ENTER)
 
-def inject_payload_HTML(driver: webdriver, requestModel: RequestModel, filterModel: FilterModel):
-    """
-    Try to inject the payload in the html (~= add tags with <> and </>)
-    """
-    pass
+        except Exception as e:
+            error(funcName="detect_dom_xss", message=f"Error for {payload}: {e}")
+            continue
+
+        # wait for the page to load
+        #sleep(1)
+
+        # request the page which is affected by the payload (if not the same)
+        if requestModel.url != requestModel.affects:
+            driver.get(requestModel.affects)
+
+        if (payload.payloadType == PayloadType.ALERT) and ("alert" not in filterModel.filteredFuncs):
+            # check if alert is present
+            try:
+                driver.switch_to.alert.accept()
+                info(message=f"Alerte détectée avec : {requestModel.payload}\n")
+                
+            except NoAlertPresentException:
+                info(message="Aucune alerte détectée")
+        
+        else:
+            # check request bin
+            pass
+    
+    return
 
 
 def detect_xss(requestor: Requestor, requestModel: RequestModel, filterModel: FilterModel):
     """
     Try to detect if the website is vulnerable to XSS
     """
-
-    # TODO: d'abord vérifier si on veut injecter dans le js ou dans le html
-    # si html, on utilise <> et </> pour les balises
-    # sinon il faut échapper le js avec ' ou " ...
     
     try:
-        assert(requestModel.is_payload_defined())
         assert(requestModel.is_vector_defined())
+        assert(requestModel.is_attackType_defined())
 
-        driver = requestor.send_request(requestModel=requestModel)
-        input = driver.find_element(requestModel.vector.type, requestModel.vector.value)
-        input.send_keys(requestModel.payload)    
-        input.send_keys(Keys.ENTER)
+        fuzz(requestor, requestModel, filterModel)
 
     except Exception as e:
         error(funcName="detect_dom_xss", message=f"Error : {e}")
-        return
-
-    # wait for the page to load
-    #sleep(1)
-
-    # check if alert is present
-    try:
-        driver.switch_to.alert.accept()
-        info(message=f"Alerte détectée avec : {requestModel.payload}\n")
-        
-    except NoAlertPresentException:
-        info(message="Aucune alerte détectée")
 
     return 
 

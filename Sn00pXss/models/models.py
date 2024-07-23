@@ -4,11 +4,11 @@ from enum import Enum
 
 class AttackType(Enum):
     """
-    Enumerates the different types of XSS attacks
+    Enumerates the different code injections, if we have to escape the JS or add tags in the HTML etc.
     """
-    REFLECTED = "REFLECTED"
-    STORED = "STORED"
-    DOM = "DOM"
+    ESCAPE_JS = "ESCAPE_JS"
+    ESCAPE_HTML = "ESCAPE_HTML"
+    INJECT_HTML = "INJECT_HTML"
 
 
 class AttackVector:
@@ -32,7 +32,6 @@ class RequestModel:
         self.affects = affects
         self.vector = None
         self.attackType = None
-        self.payload = None
 
 
     def set_vector(self, vector: AttackVector):
@@ -40,13 +39,6 @@ class RequestModel:
 
     def is_vector_defined(self):
         return self.vector is not None
-
-
-    def set_payload(self, payload: str):
-        self.payload = payload
-
-    def is_payload_defined(self):
-        return self.payload is not None
 
 
     def set_attackType(self, attackType: AttackType):
@@ -69,3 +61,22 @@ class FilterModel:
 
     def __str__(self):
         return f"FilteredChars : {self.filteredChars}\nFilteredFuncs : {self.filteredFuncs}\nFilteredTags : {self.filteredTags}"
+    
+
+
+class PayloadType(Enum):
+    """
+    Enumerates the different types of payloads
+    """
+    ALERT = "ALERT"
+    REQUEST_BIN = "REQUEST_BIN"
+
+
+class Payload:
+    """
+    This class represents the payload to be sent to the target
+    """
+    
+    def __init__(self, payloadType: PayloadType, value: str):
+        self.payloadType = payloadType
+        self.value = value

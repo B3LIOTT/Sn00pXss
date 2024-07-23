@@ -5,9 +5,6 @@ from selenium.webdriver.common.by import By
 from modules.requestor import Requestor
 
 
-TEST_PAYLOAD = """'; alert("xss dom based"); var cat= ' """
-
-
 if __name__ == '__main__':
     requestor = Requestor()
     url = "http://challenge01.root-me.org/web-client/ch32/"
@@ -24,8 +21,7 @@ if __name__ == '__main__':
     filterModel = detect_filters(requestor=requestor, requestModel=rm)
     print(filterModel)
 
-    # attack
-    rm.set_payload(payload=TEST_PAYLOAD)
+    # detect xss
     detect_xss(requestor=requestor, requestModel=rm, filterModel=filterModel)
 
     requestor.dispose()
