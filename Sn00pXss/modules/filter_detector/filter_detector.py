@@ -1,4 +1,4 @@
-from .utils import *
+from modules.utils import *
 from modules.requestor import Requestor
 from modules.logger import info, error, warn, bingo
 from models import RequestModel, FilterModel
