@@ -19,4 +19,4 @@ def get_payloads_subset(attackType: AttackType, filterModel: FilterModel) -> lis
     Returns a subset of payloads to test, based on the attack type, and the filters
     """
     
-    return Payload(value="""'; alert("xss dom based"); var cat= ' """, payloadType=PayloadType.ALERT) # TODO
+    return [Payload(value="""'; alert("xss dom based"); var cat= ' """, payloadType=PayloadType.ALERT)] # TODO
