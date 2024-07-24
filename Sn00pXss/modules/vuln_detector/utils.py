@@ -11,4 +11,4 @@ def get_payloads_subset(attackType: AttackType, filterModel: FilterModel) -> lis
     Returns a subset of payloads to test, based on the attack type, and the filters
     """
     
-    return TEST_PAYLOADS[attackType.value]
+    return TEST_PAYLOADS[attackType.value] # TODO
