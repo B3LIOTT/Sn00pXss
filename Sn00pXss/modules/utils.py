@@ -45,5 +45,5 @@ HTML_TAGS = [
 ]
 
 USEFUL_JS_FUNCTION = [
-    'alert', 'fetch', 'document.write', 'document.writeln', 'document.writeIn', 'document.createElement'
+    'alert', 'fetch', 'eval', 'atob', 'document.write', 'document.writeln', 'document.writeIn', 'document.createElement'
 ]
