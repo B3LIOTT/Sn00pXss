@@ -13,18 +13,18 @@ class Colors:
 
 
 def error(className: str, funcName: str, message: str):
-    print(f"{Colors.RED}[!] {className} -> in {funcName} {message}{Colors.RED}")
+    print(f"{Colors.RED}[X] {className} -> in {funcName} {message}{Colors.RED}")
 
 def error(funcName: str, message: str):
-    print(f"{Colors.RED}[!] In {funcName} -> {message}{Colors.RED}")
+    print(f"{Colors.RED}[X] In {funcName} -> {message}{Colors.RED}")
 
 
 
 def warn(funcName: str, message: str):
-    print(f"{Colors.ORANGE}[?] In {funcName} -> {message}{Colors.ORANGE}")
+    print(f"{Colors.ORANGE}[!] In {funcName} -> {message}{Colors.ORANGE}")
 
 def warn(message: str):
-    print(f"{Colors.ORANGE}[?] {message}{Colors.ORANGE}")
+    print(f"{Colors.ORANGE}[!] {message}{Colors.ORANGE}")
 
 
 

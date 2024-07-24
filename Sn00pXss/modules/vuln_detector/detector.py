@@ -2,16 +2,14 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoAlertPresentException
-from models import RequestModel, FilterModel, Payload, PayloadType
+from models import RequestModel, FilterModel, PayloadType
 from modules.requestor.requestor import Requestor
 from modules.logger import info, error, bingo, warn
+from .utils import get_payloads_subset
 from time import sleep
 
 
 TEST_INPUT = "!!ABCDEFGHTESTHGFEDCBA!!"
-TEST_PAYLOADS = {
-    "ESCAPE_JS": [Payload(value="""'; alert("xss dom based"); var cat= ' """, payloadType=PayloadType.ALERT)]
-}
 
 # faire une BDD qui contient des payloads par type alert ou request bin
 # comme ca on sait si on doit checker la request bin ou l'alerte
@@ -19,9 +17,10 @@ TEST_PAYLOADS = {
 
 def fuzz(requestor: Requestor, requestModel: RequestModel, filterModel: FilterModel):
     """
-    Tests given set of payloads 
+    Tests appropriate subset of payloads, based on filters
     """
-    for payload in TEST_PAYLOADS[requestModel.attackType.value]: # TODO
+    payloads_subset = get_payloads_subset(requestModel.attackType, filterModel)
+    for payload in payloads_subset:
         try:
             info(message=f"Testing payload : {payload.value}")
             driver = requestor.send_request(requestModel=requestModel)
