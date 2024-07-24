@@ -29,3 +29,9 @@ Payload de base pour chaque technique (ESCAPE_JS, ESCAPE_HTML, INJECT_HTML):
 <script>alert("xss dom based")</script>
 
 A partir desquels on peut construire des payloads plus complexes selon les filtres
+
+
+while next_payload(data):
+    ...
+
+
