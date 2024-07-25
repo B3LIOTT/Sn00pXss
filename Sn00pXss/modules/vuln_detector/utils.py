@@ -14,7 +14,8 @@ def build_ESCAPE_JS_payloads(filterModel: FilterModel) -> list[Payload]:
     """
     Builds payloads for the ESCAPE_JS attack type
     """
-    # TODO: faire une construction de payload petit à petit, ne pas retourner d'un coup
+    # TODO: faire une construction de payload petit à petit, ne pas tout retourner d'un coup
+
     payloads = []
 
     payload = BASE_PAYLOADS['ESCAPE_JS']['payload']
@@ -24,7 +25,7 @@ def build_ESCAPE_JS_payloads(filterModel: FilterModel) -> list[Payload]:
             payload = payload.replace(char, SPECIAL_CHARS['for_js_escape'][char][0])
 
         if char == "FUNCTION":
-            # TODO: mettre toutes les fonctions equivalentes au alert...
+            # TODO: mettre toutes les fonctions equivalentes au alert, puis au fetch, 
             payload = payload.replace("FUNCTION", "alert")
 
         elif char == "ARGS":

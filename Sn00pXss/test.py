@@ -5,7 +5,33 @@ from selenium.webdriver.common.by import By
 from modules.requestor import Requestor
 
 
+
+ban = """
+===================================
+
+      ,-~~-.___.
+     / |  '     \         
+    (  )         0  
+     \_/-, ,----'        __    
+        ====            / /
+       /  \-'~;        / /   
+      /  __/~|  ______/ /    
+    =(  _____| (________|
+
+    
+<script>alert("Sn00pXss")</script>
+          
+         By b3liott
+
+===================================
+
+"""
+
+
 if __name__ == '__main__':
+    print(ban)
+    input("Press Enter to start...")
+    
     requestor = Requestor()
     url = "http://challenge01.root-me.org/web-client/ch32/"
     rm = RequestModel(

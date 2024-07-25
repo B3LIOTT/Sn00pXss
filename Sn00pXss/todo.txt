@@ -24,7 +24,7 @@ Payload de base pour chaque technique (ESCAPE_JS, ESCAPE_HTML, INJECT_HTML):
 
 '; alert("xss dom based"); var dummy= '
 
-" /> <script>alert("xss dom based")</script><a 
+" /> <script>alert("xss dom based")</script><balise d'origine 
 
 <script>alert("xss dom based")</script>
 
@@ -33,5 +33,9 @@ A partir desquels on peut construire des payloads plus complexes selon les filtr
 
 while next_payload(data):
     ...
+
+
+
+gerer le cas ou la xss est dans les parametres de l'url GET (exemple: /?page=...)
 
 

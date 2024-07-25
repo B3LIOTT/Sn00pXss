@@ -31,19 +31,12 @@ SPECIAL_CHARS['for_js_escape'] = {
 
 HTML_TAGS = [
     'html', 'head', 'title', 'base', 'link', 'meta', 'style', 'script', 'noscript',
-    'body', 'section', 'nav', 'article', 'aside', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-    'header', 'footer', 'address', 'main', 'p', 'hr', 'pre', 'blockquote', 'ol', 'ul',
-    'li', 'dl', 'dt', 'dd', 'figure', 'figcaption', 'div', 'a', 'em', 'strong', 'small',
-    's', 'cite', 'q', 'dfn', 'abbr', 'data', 'time', 'code', 'var', 'samp', 'kbd', 'sub',
-    'sup', 'i', 'b', 'u', 'mark', 'ruby', 'rt', 'rp', 'bdi', 'bdo', 'span', 'br', 'wbr',
-    'ins', 'del', 'picture', 'source', 'img', 'iframe', 'embed', 'object', 'param',
-    'video', 'audio', 'track', 'map', 'area', 'table', 'caption', 'colgroup', 'col',
-    'tbody', 'thead', 'tfoot', 'tr', 'td', 'th', 'form', 'label', 'input', 'button',
-    'select', 'datalist', 'optgroup', 'option', 'textarea', 'output', 'progress', 'meter',
-    'fieldset', 'legend', 'details', 'summary', 'dialog', 'script', 'noscript', 'template',
-    'canvas', 'svg', 'math'
+    'body', 'section', 'nav', 'article', 'aside', 'h1', 'h2', 'h3', 'div', 'a', 
+    'data', 'time', 'code', 'span', 'br', 'picture', 'source', 'img', 'iframe', 
+    'embed', 'object','video', 'audio', 'input', 'button', 'option', 'textarea', 
+    'dialog', 'script','svg'
 ]
 
 USEFUL_JS_FUNCTION = [
-    'alert', 'fetch', 'eval', 'atob', 'document.write', 'document.writeln', 'document.writeIn', 'document.createElement'
+    'alert', 'fetch', 'eval', '[].filter.constructor', 'atob', 'document.write', 'document.writeln', 'document.writeIn', 'document.createElement'
 ]

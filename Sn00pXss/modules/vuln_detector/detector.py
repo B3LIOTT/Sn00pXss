@@ -11,22 +11,30 @@ from time import sleep
 
 TEST_INPUT = "!!ABCDEFGHTESTHGFEDCBA!!"
 
-# faire une BDD qui contient des payloads par type alert ou request bin
-# comme ca on sait si on doit checker la request bin ou l'alerte
+
+def send_payload_by_input(requestor: Requestor, requestModel: RequestModel, payload: str) -> webdriver:
+    driver = requestor.send_request(requestModel=requestModel)
+    input = driver.find_element(requestModel.vector.type, requestModel.vector.value)
+    input.send_keys(payload)    
+    input.send_keys(Keys.ENTER)
+
+    return driver
+
+
+def send_payload_by_url(requestor: Requestor, requestModel: RequestModel, payload: str) -> webdriver:
+    return requestor.send_request(requestModel=requestModel, url=f"{requestModel.url}/?{requestModel.vector.value}={payload}")
 
 
 def fuzz(requestor: Requestor, requestModel: RequestModel, filterModel: FilterModel):
     """
     Tests appropriate subset of payloads, based on filters
     """
+    send_payload: callable = send_payload_by_input if requestModel.vector.type else send_payload_by_url
     payloads_subset = get_payloads_subset(requestModel.attackType, filterModel)
     for payload in payloads_subset:
         try:
             info(message=f"Testing payload : {payload.value}")
-            driver = requestor.send_request(requestModel=requestModel)
-            input = driver.find_element(requestModel.vector.type, requestModel.vector.value)
-            input.send_keys(payload.value)    
-            input.send_keys(Keys.ENTER)
+            driver = send_payload(requestor=requestor, requestModel=requestModel, payload=payload.value)
 
         except Exception as e:
             error(funcName="fuzz", message=f"Error for {payload.value}: {e}")
@@ -39,14 +47,15 @@ def fuzz(requestor: Requestor, requestModel: RequestModel, filterModel: FilterMo
         if requestModel.url != requestModel.affects:
             driver.get(requestModel.affects)
 
-        if (payload.payloadType == PayloadType.ALERT) and ("alert" not in filterModel.filteredFuncs):
+        if payload.payloadType == PayloadType.ALERT:
             # check if alert is present
             try:
                 driver.switch_to.alert.accept()
-                bingo(message=f"Alerte détectée avec : {payload.value}\n")
+                bingo(message=f"Alert triggered with : {payload.value}\n")
                 
             except NoAlertPresentException:
-                warn(message="Aucune alerte détectée")
+                warn(message="No alert triggered")
+                # TODO: analyser pourquoi l'alerte n'est pas levée
         
         else:
             # check request bin
