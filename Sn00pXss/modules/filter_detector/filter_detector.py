@@ -1,6 +1,6 @@
 from modules.utils import *
 from modules.requestor import Requestor
-from modules.logger import info, error, warn, bingo
+from modules.logger import info, error, warn, bingo, big_info
 from models import RequestModel, FilterModel
 from selenium.webdriver.common.keys import Keys
 from time import sleep
@@ -83,6 +83,7 @@ def detect_filters(requestor: Requestor, requestModel: RequestModel) -> FilterMo
     """
     Try to detect if the website is filtering characters, functions or html tags
     """
+    big_info(message=f"Detecting filters")
     # get filtered characters
     filtered_chars = detect_char_filters(requestor=requestor, requestModel=requestModel)
 

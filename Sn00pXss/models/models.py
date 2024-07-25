@@ -35,6 +35,7 @@ class RequestModel:
         self.affects = affects
         self.vector = None
         self.attackType = None
+        self.escapeChar = None
 
 
     def set_vector(self, vector: AttackVector):
@@ -44,10 +45,11 @@ class RequestModel:
         return self.vector is not None
 
 
-    def set_attackType(self, attackType: AttackType):
+    def set_attack(self, attackType: AttackType, escapeChar: str=None):
         self.attackType = attackType
+        self.escapeChar = escapeChar
 
-    def is_attackType_defined(self):
+    def is_attack_defined(self):
         return self.attackType is not None
     
 

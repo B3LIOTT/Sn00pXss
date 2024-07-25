@@ -35,6 +35,11 @@ def info(message: str):
     print(f"{Colors.WHITE}[+] {message}{Colors.WHITE}")
 
 
+def big_info(message: str):
+    print()
+    print(f"{Colors.CYAN}\t[+] {message} [+]{Colors.CYAN}")
+    print()
+
 
 def bingo(message: str):
     print()

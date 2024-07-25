@@ -39,15 +39,22 @@ if __name__ == '__main__':
         affects=url,
     )
 
+    # set attack type
     vector = AttackVector(type=By.NAME, value='number')
     rm.set_vector(vector=vector)
-    rm.set_attackType(attackType=AttackType.ESCAPE_JS)
 
     # detect filters
     filterModel = detect_filters(requestor=requestor, requestModel=rm)
     print(filterModel)
 
-    # detect xss
-    detect_xss(requestor=requestor, requestModel=rm, filterModel=filterModel)
+    # TODO: algo qui détecte le(s) type(s) d'attaque(s)
+    attackTypes = [AttackType.ESCAPE_JS]
+
+    for attackType in attackTypes:
+        # set attack type
+        rm.set_attack(attackType=AttackType.ESCAPE_JS, escapeChar="'")
+
+        # detect xss
+        detect_xss(requestor=requestor, requestModel=rm, filterModel=filterModel)
 
     requestor.dispose()
