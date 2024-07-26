@@ -31,6 +31,10 @@ def detect_payload_position(requestor: Requestor, requestModel: RequestModel, se
     """
     driver = send_payload(requestor=requestor, requestModel=requestModel, payload=TEST_INPUT)
 
+    # request the page which is affected by the payload (if not the same)
+    if requestModel.url != requestModel.affects:
+        driver.get(requestModel.affects)
+
     # get the page source
     page_source = driver.page_source
 
@@ -62,7 +66,7 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
         try:
             info(message=f"Testing payload : {payload.value}")
             driver = send_payload(requestor=requestor, requestModel=requestModel, payload=payload.value)
-
+            
         except Exception as e:
             error(funcName="fuzz", message=f"Error for {payload.value}: {e}")
             continue
@@ -74,6 +78,10 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
         if requestModel.url != requestModel.affects:
             driver.get(requestModel.affects)
 
+        # get the payload in the response
+        result = driver.page_source[expected_position:expected_position+len(payload.value)]
+        info(message=f"Server response with payload : {result}\n")
+
         if payload.payloadType == PayloadType.ALERT:
             # check if alert is present
             try:
@@ -83,7 +91,6 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
                 
             except NoAlertPresentException:
                 warn(message="No alert triggered")
-                result = driver.page_source[expected_position:expected_position+len(payload.value)]
                 analyse_fail(result=result, usedPayload=payload, filterModel=filterModel, failedData=failedData)
         
         else:
