@@ -5,11 +5,11 @@ from selenium.common.exceptions import NoAlertPresentException
 from models import RequestModel, FilterModel, PayloadType, Payload
 from modules.requestor.requestor import Requestor
 from modules.logger import info, error, bingo, warn, big_info
-from .utils import get_payload_generator
+from .utils import get_payload_generator, TEST_INPUT
+import re
 from time import sleep
 
 
-TEST_INPUT = "ABCDEFGHb3liottHGFEDCBA"
 
 
 def send_payload_by_input(requestor: Requestor, requestModel: RequestModel, payload: str) -> webdriver:
@@ -25,6 +25,27 @@ def send_payload_by_url(requestor: Requestor, requestModel: RequestModel, payloa
     return requestor.send_request(requestModel=requestModel, url=f"{requestModel.url}/?{requestModel.vector.value}={payload}")
 
 
+def detect_payload_position(requestor: Requestor, requestModel: RequestModel, send_payload: callable):
+    """
+    Detect the position of the payload in the page
+    """
+    driver = send_payload(requestor=requestor, requestModel=requestModel, payload=TEST_INPUT)
+
+    # get the page source
+    page_source = driver.page_source
+
+    # check if the payload is in the page source
+    if TEST_INPUT in page_source:
+        start_index = page_source.index(TEST_INPUT)
+        bingo(message=f"Payload position expected at index {start_index}")
+        return start_index
+    
+    else:
+        error(message="Payload not detected in the page")
+        requestor.dispose()
+        exit()
+
+
 def fuzz(requestor: Requestor, requestModel: RequestModel):
     """
     Tests appropriate subset of payloads, based on filters
@@ -32,6 +53,8 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
     filterModel = FilterModel()
     send_payload: callable = send_payload_by_input if requestModel.vector.type else send_payload_by_url
     next_payload: callable = get_payload_generator(requestModel.attackType)
+
+    expected_position = detect_payload_position(requestor, requestModel, send_payload)
 
     payload : Payload = None
     failedData = []
@@ -60,7 +83,8 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
                 
             except NoAlertPresentException:
                 warn(message="No alert triggered")
-                analyse_fail(response=driver.page_source, usedPayload=payload, filterModel=filterModel, failedData=failedData)
+                result = driver.page_source[expected_position:expected_position+len(payload.value)]
+                analyse_fail(result=result, usedPayload=payload, filterModel=filterModel, failedData=failedData)
         
         else:
             # check request bin
@@ -69,17 +93,17 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
     return
 
 
-def analyse_fail(response, usedPayload: Payload, filterModel: FilterModel, failedData: list):
+def analyse_fail(result, usedPayload: Payload, filterModel: FilterModel, failedData: list):
     """
     Analyse the failed payload
     """
-  
+
     data = {
         "value": "",
         "type": ""
     }
     for k in range(len(usedPayload.usedChars)):
-        if ucr:=usedPayload.usedCharsReplaced[k] not in response:
+        if ucr:=usedPayload.usedCharsReplaced[k] not in result:
             if usedPayload.usedChars[k] == "FUNCTION":
                 data["type"] = "FUNCTION"
                 data["value"] = ucr
