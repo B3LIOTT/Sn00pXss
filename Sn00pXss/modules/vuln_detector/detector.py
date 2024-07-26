@@ -33,8 +33,9 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
     send_payload: callable = send_payload_by_input if requestModel.vector.type else send_payload_by_url
     next_payload: callable = get_payload_generator(requestModel.attackType)
 
-    payload : Payload
-    while payload:=next_payload(requestModel):
+    payload : Payload = None
+    failedData = []
+    while payload:=next_payload(requestModel, filterModel, payload, failedData):
         try:
             info(message=f"Testing payload : {payload.value}")
             driver = send_payload(requestor=requestor, requestModel=requestModel, payload=payload.value)
@@ -55,17 +56,42 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
             try:
                 driver.switch_to.alert.accept()
                 bingo(message=f"Alert triggered with : {payload.value}\n")
+                return
                 
             except NoAlertPresentException:
                 warn(message="No alert triggered")
-                # TODO: analyser pourquoi l'alerte n'est pas levée
-                analyse_fail() # mettre à jour le filterModel en fonction du résultat
+                analyse_fail(response=driver.page_source, usedPayload=payload, filterModel=filterModel, failedData=failedData)
         
         else:
             # check request bin
             raise NotImplementedError("Request bin not implemented yet")
     
     return
+
+
+def analyse_fail(response, usedPayload: Payload, filterModel: FilterModel, failedData: list):
+    """
+    Analyse the failed payload
+    """
+  
+    data = {
+        "value": "",
+        "type": ""
+    }
+    for k in range(len(usedPayload.usedChars)):
+        if ucr:=usedPayload.usedCharsReplaced[k] not in response:
+            if usedPayload.usedChars[k] == "FUNCTION":
+                data["type"] = "FUNCTION"
+                data["value"] = ucr
+                filterModel.add_filtered_func(data['value'])
+
+            elif usedPayload.usedChars[k] == "ARGS":
+                data["type"] = "ARGS"
+                data["value"] = ucr
+            
+            else:
+                filterModel.add_filtered_char(data['value'])
+                failedData.append(data)
 
 
 def detect_xss(requestor: Requestor, requestModel: RequestModel):
