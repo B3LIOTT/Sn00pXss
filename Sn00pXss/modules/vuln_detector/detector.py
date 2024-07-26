@@ -2,14 +2,14 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoAlertPresentException
-from models import RequestModel, FilterModel, PayloadType
+from models import RequestModel, FilterModel, PayloadType, Payload
 from modules.requestor.requestor import Requestor
 from modules.logger import info, error, bingo, warn, big_info
-from .utils import get_payloads_subset
+from .utils import get_payload_generator
 from time import sleep
 
 
-TEST_INPUT = "!!ABCDEFGHTESTHGFEDCBA!!"
+TEST_INPUT = "ABCDEFGHb3liottHGFEDCBA"
 
 
 def send_payload_by_input(requestor: Requestor, requestModel: RequestModel, payload: str) -> webdriver:
@@ -25,13 +25,16 @@ def send_payload_by_url(requestor: Requestor, requestModel: RequestModel, payloa
     return requestor.send_request(requestModel=requestModel, url=f"{requestModel.url}/?{requestModel.vector.value}={payload}")
 
 
-def fuzz(requestor: Requestor, requestModel: RequestModel, filterModel: FilterModel):
+def fuzz(requestor: Requestor, requestModel: RequestModel):
     """
     Tests appropriate subset of payloads, based on filters
     """
+    filterModel = FilterModel()
     send_payload: callable = send_payload_by_input if requestModel.vector.type else send_payload_by_url
-    payloads_subset = get_payloads_subset(requestModel.attackType, requestModel.escapeChar, filterModel)
-    for payload in payloads_subset:
+    next_payload: callable = get_payload_generator(requestModel.attackType)
+
+    payload : Payload
+    while payload:=next_payload(requestModel):
         try:
             info(message=f"Testing payload : {payload.value}")
             driver = send_payload(requestor=requestor, requestModel=requestModel, payload=payload.value)
@@ -56,15 +59,16 @@ def fuzz(requestor: Requestor, requestModel: RequestModel, filterModel: FilterMo
             except NoAlertPresentException:
                 warn(message="No alert triggered")
                 # TODO: analyser pourquoi l'alerte n'est pas levée
+                analyse_fail() # mettre à jour le filterModel en fonction du résultat
         
         else:
             # check request bin
-            pass
+            raise NotImplementedError("Request bin not implemented yet")
     
     return
 
 
-def detect_xss(requestor: Requestor, requestModel: RequestModel, filterModel: FilterModel):
+def detect_xss(requestor: Requestor, requestModel: RequestModel):
     """
     Try to detect if the website is vulnerable to XSS
     """
@@ -74,7 +78,7 @@ def detect_xss(requestor: Requestor, requestModel: RequestModel, filterModel: Fi
         assert(requestModel.is_vector_defined())
         assert(requestModel.is_attack_defined())
 
-        fuzz(requestor, requestModel, filterModel)
+        fuzz(requestor, requestModel)
 
     except Exception as e:
         error(funcName="detect_xss", message=f"Error : {e}")

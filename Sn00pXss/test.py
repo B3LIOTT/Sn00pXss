@@ -5,6 +5,8 @@ from selenium.webdriver.common.by import By
 from modules.requestor import Requestor
 
 
+__author__ = "b3liott"
+
 
 ban = """
 ===================================
@@ -24,7 +26,6 @@ ban = """
          By b3liott
 
 ===================================
-
 """
 
 
@@ -44,17 +45,17 @@ if __name__ == '__main__':
     rm.set_vector(vector=vector)
 
     # detect filters
-    filterModel = detect_filters(requestor=requestor, requestModel=rm)
-    print(filterModel)
+    #filterModel = detect_filters(requestor=requestor, requestModel=rm)
+    #print(filterModel)
 
     # TODO: algo qui détecte le(s) type(s) d'attaque(s)
-    attackTypes = [AttackType.ESCAPE_JS]
+    attacks = [(AttackType.ESCAPE_JS, "'")]
 
-    for attackType in attackTypes:
+    for attack in attacks:
         # set attack type
-        rm.set_attack(attackType=AttackType.ESCAPE_JS, escapeChar="'")
+        rm.set_attack(attackType=attack[0], escapeChar=attack[1])
 
         # detect xss
-        detect_xss(requestor=requestor, requestModel=rm, filterModel=filterModel)
+        detect_xss(requestor=requestor, requestModel=rm)
 
     requestor.dispose()
