@@ -43,6 +43,7 @@ BASE_PAYLOADS = {
 TEST_INPUT = "ABCDEFGHb3liottHGFEDCBA"
 
 
+
 def replace_list_element(l: list, old: str, new: str) -> list: l[l.index(old)] = new; return l
 
 
@@ -88,15 +89,11 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
     """
     Builds payloads for the INJECT_HTML attack type
     """
-    # TODO: d'abord essayer d'injecter un script dans une balise script
-    # si on detecte pas la baise dans le dom on essaye une autre similaire (svg avec du js, ou une img avec un onerror)
-    # ...
+    # we first try to inject a script tag
+    # if it is filtered, we try to inject other tags like img or svg which can also execute js code
 
     if lastTestedPayload is None:
-        # take the first payload which has the expected escape char
-        for base_payload in BASE_PAYLOADS["INJECT_HTML"]: 
-            if base_payload['used_chars'][0] == requestModel.escapeChar: payload = base_payload;break
-
+        payload = BASE_PAYLOADS['INJECT_HTML'][0]
         payload_str = payload['payload']
 
         # TODO: mettre toutes les fonctions equivalentes au alert, puis au fetch, 
@@ -112,17 +109,15 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
         if len(failedData) == 0:
             # if there is no failed data, it means that the last tested payload was in the response but didn't trigger the alert
             # so we need to try the next payload
-            raise NotImplementedError("Not implemented yet (in build_ESCAPE_JS_payload)")
+            raise NotImplementedError("Not implemented yet (in build_INJECT_HTML_payload)")
 
         # replace the failed data with the next possible value
         for data in failedData:
-            newChar = SPECIAL_CHARS['for_js_escape'][data]
+            newChar = SPECIAL_CHARS['for_html_injection'][data]
             payload_str = lastTestedPayload.value.replace(data, newChar)
 
     payloadType = PayloadType.ALERT # TODO: remove
     return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced)
-
-    raise NotImplementedError("INJECT_HTML not implemented yet")
 
 
 

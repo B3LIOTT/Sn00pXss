@@ -31,6 +31,9 @@ SPECIAL_CHARS['for_js_escape'] = {
     '\t': ['\t', '&#9;', '%09'],
 }
 
+SPECIAL_CHARS['for_html_injection'] = {}
+
+
 HTML_TAGS = [
     'html', 'head', 'title', 'base', 'link', 'meta', 'style', 'script', 'noscript',
     'body', 'section', 'nav', 'article', 'aside', 'h1', 'h2', 'h3', 'div', 'a', 

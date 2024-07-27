@@ -2,6 +2,8 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoAlertPresentException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from models import RequestModel, FilterModel, PayloadType, Payload
 from modules.requestor.requestor import Requestor
 from modules.logger import info, error, bingo, warn, big_info
@@ -78,19 +80,22 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
         if requestModel.url != requestModel.affects:
             driver.get(requestModel.affects)
 
-        # get the payload in the response
-        result = driver.page_source[expected_position:expected_position+len(payload.value)]
-        info(message=f"Server response with payload : {result}\n")
 
         if payload.payloadType == PayloadType.ALERT:
             # check if alert is present
             try:
-                driver.switch_to.alert.accept()
+                WebDriverWait(driver, 2).until(EC.alert_is_present())
+                alert = driver.switch_to.alert
+                alert.accept()
                 bingo(message=f"Alert triggered with : {payload.value}\n")
                 return
                 
             except NoAlertPresentException:
                 warn(message="No alert triggered")
+
+                # get the payload in the response
+                result = driver.page_source[expected_position:expected_position+len(payload.value)]
+                info(message=f"Server response with payload : {result}\n")
                 analyse_fail(result=result, usedPayload=payload, filterModel=filterModel, failedData=failedData)
         
         else:
