@@ -2,6 +2,7 @@ from models import AttackType, Payload, PayloadType, RequestModel, FilterModel
 from modules.utils import *
 
 
+# always put ARGS after FUNCTION
 BASE_PAYLOADS = {
     "ESCAPE_JS": [
         {
@@ -58,7 +59,7 @@ def build_ESCAPE_JS_payload(requestModel: RequestModel, filterModel: FilterModel
         for base_payload in BASE_PAYLOADS["ESCAPE_JS"]: 
             if base_payload['used_chars'][0] == requestModel.escapeChar: payload = base_payload;break
 
-        payload_str = payload['payload']
+        payload_str = f"{TEST_INPUT}{payload['payload']}"
 
         # TODO: mettre toutes les fonctions equivalentes au alert, puis au fetch, 
         payload_str = payload_str.replace("FUNCTION", "alert")
@@ -80,13 +81,14 @@ def build_ESCAPE_JS_payload(requestModel: RequestModel, filterModel: FilterModel
         for data in failedData:
             # get the next equivalent character which is not in the failed data
             if data['type'] == "FUNCTION":  # TODO: improve
-                args = lastTestedPayload.usedCharsReplaced[lastTestedPayload.usedChars.index('ARGS')]
                 newChar = 'atob'
 
             elif data['type'] == "ARGS":
-                if True:
+                if usedCharsReplaced.__contains__('atob'):
+                    args = lastTestedPayload.usedCharsReplaced[lastTestedPayload.usedChars.index('ARGS')]
                     newChar = b64.b64encode(args.encode()).decode()
                 else:
+                    # TODO: verify if args contains special characters which need to be replaced
                     pass
             else:
                 for char in EQUIVALENTS[data]:
@@ -102,7 +104,7 @@ def build_ESCAPE_JS_payload(requestModel: RequestModel, filterModel: FilterModel
 
 
     payloadType = PayloadType.ALERT # TODO: remove
-    return Payload(value=f"{TEST_INPUT}{payload_str}", payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced)
+    return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced)
 
 
 
@@ -115,7 +117,7 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
 
     if lastTestedPayload is None:
         payload = BASE_PAYLOADS['INJECT_HTML'][0]
-        payload_str = payload['payload']
+        payload_str = f"{TEST_INPUT}{payload['payload']}"
 
         # TODO: mettre toutes les fonctions equivalentes au alert, puis au fetch, 
         payload_str = payload_str.replace("FUNCTION", "alert")
@@ -132,18 +134,7 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
             # so we need to try the next payload
             raise NotImplementedError("Not implemented yet (in build_INJECT_HTML_payload)")
 
-        # replace the failed data with the next possible value
-        for data in failedData:
-            # get the next equivalent character which is not in the failed data
-            for char in EQUIVALENTS[data]:
-                if char not in failedData:
-                    newChar = char
-                    break
-            
-            if newChar is None:
-                raise Exception("No more equivalent character available")
-            
-            payload_str = lastTestedPayload.value.replace(data, newChar)
+        # TODO: same as above
 
 
     payloadType = PayloadType.ALERT # TODO: remove
