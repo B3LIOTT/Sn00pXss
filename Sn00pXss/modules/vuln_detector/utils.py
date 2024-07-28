@@ -70,6 +70,7 @@ def build_ESCAPE_JS_payload(requestModel: RequestModel, filterModel: FilterModel
         usedCharsReplaced = replace_list_element(usedCharsReplaced, 'ARGS', 'xss')
 
     else:
+        usedCharsReplaced = lastTestedPayload.usedCharsReplaced
         if len(failedData) == 0:
             # if there is no failed data, it means that the last tested payload was in the response but didn't trigger the alert
             # so we need to try the next payload
@@ -77,8 +78,28 @@ def build_ESCAPE_JS_payload(requestModel: RequestModel, filterModel: FilterModel
 
         # replace the failed data with the next possible value
         for data in failedData:
-            newChar = SPECIAL_CHARS['for_js_escape'][data]
-            payload_str = lastTestedPayload.value.replace(data, newChar)
+            # get the next equivalent character which is not in the failed data
+            if data['type'] == "FUNCTION":  # TODO: improve
+                args = lastTestedPayload.usedCharsReplaced[lastTestedPayload.usedChars.index('ARGS')]
+                newChar = 'atob'
+
+            elif data['type'] == "ARGS":
+                if True:
+                    newChar = b64.b64encode(args.encode()).decode()
+                else:
+                    pass
+            else:
+                for char in EQUIVALENTS[data]:
+                    if char not in failedData:
+                        newChar = char
+                        break
+            
+            if newChar is None:
+                raise Exception("No more equivalent character available")
+            
+            payload_str = lastTestedPayload.value.replace(data['value'], newChar)
+            usedCharsReplaced = replace_list_element(usedCharsReplaced, data['value'], newChar)
+
 
     payloadType = PayloadType.ALERT # TODO: remove
     return Payload(value=f"{TEST_INPUT}{payload_str}", payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced)
@@ -113,8 +134,17 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
 
         # replace the failed data with the next possible value
         for data in failedData:
-            newChar = SPECIAL_CHARS['for_html_injection'][data]
+            # get the next equivalent character which is not in the failed data
+            for char in EQUIVALENTS[data]:
+                if char not in failedData:
+                    newChar = char
+                    break
+            
+            if newChar is None:
+                raise Exception("No more equivalent character available")
+            
             payload_str = lastTestedPayload.value.replace(data, newChar)
+
 
     payloadType = PayloadType.ALERT # TODO: remove
     return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced)
