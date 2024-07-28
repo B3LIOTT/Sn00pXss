@@ -81,12 +81,12 @@ def build_ESCAPE_JS_payload(requestModel: RequestModel, filterModel: FilterModel
         for data in failedData:
             # get the next equivalent character which is not in the failed data
             if data['type'] == "FUNCTION":  # TODO: improve
-                newChar = 'atob'
+                newChar = 'eval(atob'
 
             elif data['type'] == "ARGS":
                 if usedCharsReplaced.__contains__('atob'):
                     args = lastTestedPayload.usedCharsReplaced[lastTestedPayload.usedChars.index('ARGS')]
-                    newChar = b64.b64encode(args.encode()).decode()
+                    newChar =f"{b64.b64encode(args.encode()).decode()})"
                 else:
                     # TODO: verify if args contains special characters which need to be replaced
                     pass
