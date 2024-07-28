@@ -5,6 +5,10 @@ SPECIAL_CHARS = {
     'url_encoded': ['%3C', '%3E', '%28', '%29', '%5B', '%5D', '%7B', '%7D', '%3D', '%2B', '%2D', '%2A', '%2F', '%5C', '%7C', '%26', '%5E', '%25', '%24', '%23', '%40', '%21', '%7E', '%60', '%3F', '%3A', '%3B', '%2C', '%2E', '%20', '%09', '%0A']
 }
 
+
+# TOUT CHANGER, FAIRE UN DICT AVEC TOUS LES CARACTERES SPECIAUX ET LEURS EQUIVALENTS
+# FAIRE UNE FONCTION QUI CONSTRUIT DES ÉQUIVALENTS DE FONCTIONS, EXEMPE: ALERT(ARG) = ATOB(BASE64)
+
 SPECIAL_CHARS['for_html_tags'] = {
     '<': ['<', '&lt;', '%3C'],
     '>': ['>', '&gt;', '%3E'],

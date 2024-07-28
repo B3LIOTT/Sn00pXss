@@ -43,10 +43,8 @@ if __name__ == '__main__':
     
     requestor = Requestor()
     url = "http://challenge01.root-me.org/web-client/ch32/"
-    rm = RequestModel(
-        url=url,
-        affects=url,
-    )
+    
+    rm = RequestModel(url=url)
 
     # set attack type
     vector = AttackVector(type=By.NAME, value='number')

@@ -34,7 +34,7 @@ def detect_payload_position(requestor: Requestor, requestModel: RequestModel, se
     driver = send_payload(requestor=requestor, requestModel=requestModel, payload=TEST_INPUT)
 
     # request the page which is affected by the payload (if not the same)
-    if requestModel.url != requestModel.affects:
+    if requestModel.affects is not None:
         driver.get(requestModel.affects)
 
     # get the page source
@@ -47,7 +47,7 @@ def detect_payload_position(requestor: Requestor, requestModel: RequestModel, se
         return start_index
     
     else:
-        error(message="Payload not detected in the page")
+        error(message="Payload not detected in the page, maybe the page is not affected by the payload.\nVerify if you put the right affected page.")
         requestor.dispose()
         exit()
 
@@ -77,7 +77,7 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
         #sleep(1)
 
         # request the page which is affected by the payload (if not the same)
-        if requestModel.url != requestModel.affects:
+        if requestModel.affects is not None:
             driver.get(requestModel.affects)
 
 
@@ -95,7 +95,7 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
 
                 # get the payload in the response
                 result = driver.page_source[expected_position:expected_position+len(payload.value)]
-                info(message=f"Server response with payload : {result}\n")
+                warn(message=f"Server response with payload : {result}\nAnalysing why the payload failed...\n")
                 analyse_fail(result=result, usedPayload=payload, filterModel=filterModel, failedData=failedData)
         
         else:
@@ -107,7 +107,7 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
 
 def analyse_fail(result, usedPayload: Payload, filterModel: FilterModel, failedData: list):
     """
-    Analyse the failed payload
+    Analyse the repsonse when the payload failed and add the data to the filter model
     """
 
     data = {
@@ -115,7 +115,9 @@ def analyse_fail(result, usedPayload: Payload, filterModel: FilterModel, failedD
         "type": ""
     }
     for k in range(len(usedPayload.usedChars)):
+        # check if the character is in the result
         if ucr:=usedPayload.usedCharsReplaced[k] not in result:
+            # distinguish the type of data: char, function, args
             if usedPayload.usedChars[k] == "FUNCTION":
                 data["type"] = "FUNCTION"
                 data["value"] = ucr
@@ -127,7 +129,8 @@ def analyse_fail(result, usedPayload: Payload, filterModel: FilterModel, failedD
             
             else:
                 filterModel.add_filtered_char(data['value'])
-                failedData.append(data)
+            
+            failedData.append(data)
 
 
 def detect_xss(requestor: Requestor, requestModel: RequestModel):
