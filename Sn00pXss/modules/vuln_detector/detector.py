@@ -53,7 +53,7 @@ def detect_payload_position(requestor: Requestor, requestModel: RequestModel, se
 
     # request the page which is affected by the payload (if not the same)
     if requestModel.affects is not None:
-        driver.get(requestModel.affects)
+        driver = requestor.get_affected()
 
     # get the page source
     page_source = driver.page_source
@@ -96,7 +96,7 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
 
         # request the page which is affected by the payload (if not the same)
         if requestModel.affects is not None:
-            driver.get(requestModel.affects)
+            driver = requestor.get_affected()
 
 
         if payload.payloadType == PayloadType.ALERT:
