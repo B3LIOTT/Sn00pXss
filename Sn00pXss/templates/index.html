@@ -16,7 +16,9 @@
       {% for bin in bins %}
     <div class="dynamic-div">
         <h2>{{ bin.title }}</h2>
-        <p>{{ bin.description }}</p>
+        {% for arg in bin.args %}
+          <p>{{ arg }}</p>
+        {% endfor %}
     </div>
     {% endfor %}
     </div>

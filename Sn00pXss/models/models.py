@@ -2,6 +2,13 @@ from selenium.webdriver.common.by import By
 from enum import Enum
 
 
+
+class RequestBin:
+    def __init__(self, title, args):
+        self.title = title
+        self.args = args 
+
+
 class AttackType(Enum):
     """
     Enumerates the different code injections, if we have to escape the JS or add tags in the HTML etc.
