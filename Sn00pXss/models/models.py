@@ -105,8 +105,9 @@ class Payload:
     This class represents the payload to be sent to the target
     """
     
-    def __init__(self, payloadType: PayloadType, value: str, usedChars: list, usedCharsReplaced: list):
+    def __init__(self, payloadType: PayloadType, value: str, usedChars: list, usedCharsReplaced: list, referredIndex: int):
         self.payloadType = payloadType
         self.value = value
         self.usedChars = usedChars
         self.usedCharsReplaced = usedCharsReplaced
+        self.referredIndex = referredIndex

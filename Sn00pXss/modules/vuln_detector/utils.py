@@ -49,11 +49,19 @@ def replace_list_element(l: list, old: str, new: str) -> list: l[l.index(old)] =
 
 
 
-def next_payload(lastTestedPayload: Payload) -> Payload:
-    raise NotImplementedError("Not implemented yet (in next_payload)")
+def next_payload(attackType: AttackType, lastTestedPayload: Payload) -> Payload:
+
+    if attackType == AttackType.ESCAPE_JS:
+        return None, lastTestedPayload.referredIndex+1
+    
+    elif attackType == AttackType.INJECT_HTML:
+        return None, lastTestedPayload.referredIndex+1
+    
+    else:
+        raise NotImplementedError(f"Attack type {attackType} not implemented yet (in next_payload)")
 
 
-def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list) -> Payload:
+def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list, attackType: AttackType) -> Payload:
     """
     Updates the payload by replacing the failed data with the next possible value
     """
@@ -61,7 +69,7 @@ def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list
     if len(failedData) == 0:
             # if there is no failed data, it means that the last tested payload was in the response but didn't trigger the alert
             # so we need to try the next payload
-            return next_payload(lastTestedPayload)
+            return next_payload(attackType, lastTestedPayload)
 
     # replace the failed data with the next possible value
     toRemove = []
@@ -105,7 +113,7 @@ def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list
         replace_list_element(usedCharsReplaced, data['value'], newChar)
 
 
-    return payload_str
+    return payload_str, lastTestedPayload.referredIndex
     
 
 
@@ -132,11 +140,11 @@ def build_ESCAPE_JS_payload(requestModel: RequestModel, filterModel: FilterModel
         replace_list_element(usedCharsReplaced, 'ARGS', 'xss')
 
     else:
-        payload_str = update_payload_with_failed_data(lastTestedPayload, failedData)
+        payload_str, newIndex = update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.attackType)
 
 
     payloadType = PayloadType.ALERT # TODO: change this
-    return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced)
+    return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced, referredIndex=newIndex)
 
 
 
@@ -162,11 +170,11 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
         replace_list_element(usedCharsReplaced, 'ARGS', 'xss')
 
     else:
-        payload_str = update_payload_with_failed_data(lastTestedPayload, failedData)
+        payload_str, newIndex = update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.attackType)
 
 
     payloadType = PayloadType.ALERT # TODO: remove
-    return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced)
+    return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced, referredIndex=newIndex)
 
 
 
