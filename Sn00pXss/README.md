@@ -13,4 +13,4 @@ First, install required python packages:
 pip install -r requirements.txt
 ```
 
-...
+Comming soon... (soon = maybe one day)
