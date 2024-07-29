@@ -16,7 +16,7 @@ class AttackVector:
     Defines the attack vector to be used (by name, id, etc...)
     """
     
-    def __init__(self, type: By | None, value: str, submitButtonType: By | None, submitButtonValue: str | None):
+    def __init__(self, type: By | None, value: str, submitButtonType: By = None, submitButtonValue: str = None):
         """
         If the type is None, the vector is a GET parameter with the value as key
         """

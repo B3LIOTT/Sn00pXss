@@ -119,7 +119,9 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
         else:
             # check request bin
             raise NotImplementedError("Request bin not implemented yet")
-    
+
+
+    warn(message="No more payloads available, stopping the fuzzing process")
     return
 
 

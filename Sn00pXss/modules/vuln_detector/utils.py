@@ -51,14 +51,16 @@ def replace_list_element(l: list, old: str, new: str) -> list: l[l.index(old)] =
 
 def next_payload(attackType: AttackType, lastTestedPayload: Payload) -> Payload:
 
-    if attackType == AttackType.ESCAPE_JS:
-        return None, lastTestedPayload.referredIndex+1
+    if attackType == AttackType.ESCAPE_JS and lastTestedPayload.referredIndex < len(BASE_PAYLOADS['ESCAPE_JS'])-1:
+        newIndex = lastTestedPayload.referredIndex+1
+        return BASE_PAYLOADS['ESCAPE_JS'][newIndex], newIndex
     
-    elif attackType == AttackType.INJECT_HTML:
-        return None, lastTestedPayload.referredIndex+1
+    elif attackType == AttackType.INJECT_HTML and lastTestedPayload.referredIndex < len(BASE_PAYLOADS['INJECT_HTML'])-1:
+        newIndex = lastTestedPayload.referredIndex+1
+        return BASE_PAYLOADS['INJECT_HTML'][newIndex], newIndex
     
     else:
-        raise NotImplementedError(f"Attack type {attackType} not implemented yet (in next_payload)")
+        return None, None
 
 
 def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list, attackType: AttackType) -> Payload:
@@ -128,6 +130,7 @@ def build_ESCAPE_JS_payload(requestModel: RequestModel, filterModel: FilterModel
             if base_payload['used_chars'][0] == requestModel.escapeChar: payload = base_payload;break
 
         payload_str = f"{TEST_INPUT}{payload['payload']}"
+        newIndex = 0
 
         # TODO: mettre toutes les fonctions equivalentes au alert, puis au fetch, 
         payload_str = payload_str.replace("FUNCTION", "alert")
@@ -142,6 +145,9 @@ def build_ESCAPE_JS_payload(requestModel: RequestModel, filterModel: FilterModel
     else:
         payload_str, newIndex = update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.attackType)
 
+        if payload_str is None:
+            # no more payloads available, so we return None to stop the fuzzing process
+            return
 
     payloadType = PayloadType.ALERT # TODO: change this
     return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced, referredIndex=newIndex)
@@ -171,6 +177,10 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
 
     else:
         payload_str, newIndex = update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.attackType)
+
+        if payload_str is None:
+            # no more payloads available, so we return None to stop the fuzzing process
+            return
 
 
     payloadType = PayloadType.ALERT # TODO: remove
