@@ -32,7 +32,7 @@ BASE_PAYLOADS = {
             "used_chars": ['<', '>', '(', ')', '"', "'", '=', 'FUNCTION', 'ARGS']
         },
         {
-            "payload": """<button autofocus onfocus=FUNCTION('ARGS')></button>"""
+            "payload": """<button autofocus onfocus=FUNCTION('ARGS')></button>""",
             "used_chars": ['<', '>', '(', ')', '"', "'", '=', '/', 'FUNCTION', 'ARGS']
         }
     ],
@@ -168,6 +168,7 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
     if lastTestedPayload is None:
         payload = BASE_PAYLOADS['INJECT_HTML'][0]
         payload_str = f"{TEST_INPUT}{payload['payload']}"
+        newIndex = 0
 
         # TODO: mettre toutes les fonctions equivalentes au alert, puis au fetch, 
         payload_str = payload_str.replace("FUNCTION", "alert")

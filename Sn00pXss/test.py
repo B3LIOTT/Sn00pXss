@@ -42,14 +42,27 @@ if __name__ == '__main__':
     choice = int(input(choice))
     
     requestor = Requestor()
-    url = "http://challenge01.root-me.org/web-client/ch32/"
     
+    # test 1 : XSS DOM based Introduction
+    # url = "http://challenge01.root-me.org/web-client/ch32/"
+    
+    # test 2 : XSS Stored 1
+    url = "http://challenge01.root-me.org/web-client/ch18/"
+
     rm = RequestModel(
             url=url
         )
+    
+    # test 2
+    rm.set_misc_inputs(miscInputs={'titre': By.NAME})
 
     # set attack type
-    vector = AttackVector(type=By.NAME, value='number')
+    # test 1
+    # vector = AttackVector(type=By.NAME, value='number')
+
+    # test 2
+    vector = AttackVector(type=By.NAME, value='message', submitButtonType=By.CSS_SELECTOR, submitButtonValue='input[type="submit"]')
+
     rm.set_vector(vector=vector)
 
     if choice == 2:
@@ -59,7 +72,11 @@ if __name__ == '__main__':
 
     elif choice == 1:
         # TODO: algo qui détecte le(s) type(s) d'attaque(s)
-        attacks = [(AttackType.ESCAPE_JS, "'")]
+        # test 1
+        # attacks = [(AttackType.ESCAPE_JS, "'")]
+
+        # test 2
+        attacks = [(AttackType.INJECT_HTML, "'")]
 
         for attack in attacks:
             # set attack type
