@@ -47,6 +47,7 @@ def detect_html_tags_filters(requestor: Requestor, requestModel: RequestModel, u
     for tag in HTML_TAGS:
         try:
             # send the request
+            raise Exception("CHANGE detect_html_tags_filters TO BE ABLE TO REQUEST IN COMPLEX FORMS, OR GET URLS LIKE IN detector.py")
             payload = f"{usable_chars['<'][0]}{tag}{usable_chars['>'][0]}{TEST_INPUT}{usable_chars['<'][0]}{usable_chars['/'][0]}{tag}{usable_chars['>'][0]}"
             raw_payload = f"<{tag}>{TEST_INPUT}</{tag}>"
             driver = requestor.send_request(requestModel=requestModel)
@@ -110,5 +111,10 @@ def detect_filters(requestor: Requestor, requestModel: RequestModel) -> FilterMo
 
     filtered_funcs = detect_func_filters(requestor=requestor, requestModel=requestModel)
 
-    return FilterModel(filteredChars=filtered_chars, filteredTags=filtered_tags, filteredFuncs=filtered_funcs)
+    filterModel = FilterModel()
+    filterModel.filteredChars = filtered_chars
+    filterModel.filteredTags = filtered_tags
+    filterModel.filteredFuncs = filtered_funcs
+
+    return filterModel
    
