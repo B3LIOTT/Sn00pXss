@@ -172,16 +172,3 @@ def detect_xss(requestor: Requestor, requestModel: RequestModel):
 
     return 
 
-
-def is_injected(driver: webdriver):
-
-    #buffer = driver.page_source.replace(TEST_INPUT, TEST_PAYLOAD)
-    
-    all_elements = driver.find_elements(By.XPATH, '//*')
-
-    print("Toutes les balises de la page :")
-    for element in all_elements:
-        print(f"Balise : {element.tag_name} | Text : {element.text}")
-
-    # regarder si on a bien injecté la balise
-    return

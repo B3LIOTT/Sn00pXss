@@ -127,6 +127,7 @@ def build_ESCAPE_JS_payload(requestModel: RequestModel, filterModel: FilterModel
     """
     Builds payloads for the ESCAPE_JS attack type
     """
+    # TODO: be able to choose ALERT or REQUEST_BIN in the building process
 
     if lastTestedPayload is None:
         # take the first payload which has the expected escape char
@@ -162,6 +163,8 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
     """
     Builds payloads for the INJECT_HTML attack type
     """
+    # TODO: be able to choose ALERT or REQUEST_BIN in the building process
+
     # we first try to inject a script tag
     # if it is filtered, we try to inject other tags like img or svg which can also execute js code
 
@@ -170,13 +173,13 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
         payload_str = f"{TEST_INPUT}{payload['payload']}"
         newIndex = 0
 
-        # TODO: mettre toutes les fonctions equivalentes au alert, puis au fetch, 
+        # TODO: generate payloads for alert and fetch 
         payload_str = payload_str.replace("FUNCTION", "alert")
         usedCharsReplaced = payload['used_chars'].copy()
         replace_list_element(usedCharsReplaced, 'FUNCTION', 'alert')
         payloadType = PayloadType.ALERT
 
-        # TODO: mettre les arguments en fonction du type alert ou request bin
+        # TODO: set arguments in function of the type alert or request bin
         payload_str = payload_str.replace("ARGS", "xss")
         replace_list_element(usedCharsReplaced, 'ARGS', 'xss')
 
