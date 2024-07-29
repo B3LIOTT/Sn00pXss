@@ -17,6 +17,7 @@ def detect_char_filters(requestor: Requestor, requestModel: RequestModel):
     for key in SPECIAL_CHARS.keys():
         for char in SPECIAL_CHARS[key]:
             try:
+                raise Exception("CHANGE detect_html_tags_filters TO BE ABLE TO REQUEST IN COMPLEX FORMS, OR GET URLS LIKE IN detector.py")  
                 # send the request
                 payload = f"{char}{TEST_INPUT}{char}"
                 driver = requestor.send_request(requestModel=requestModel)
