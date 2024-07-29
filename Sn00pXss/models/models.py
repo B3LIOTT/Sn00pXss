@@ -16,12 +16,18 @@ class AttackVector:
     Defines the attack vector to be used (by name, id, etc...)
     """
     
-    def __init__(self, type: By | None, value: str):
+    def __init__(self, type: By | None, value: str, submitButtonType: By | None, submitButtonValue: str | None):
         """
         If the type is None, the vector is a GET parameter with the value as key
         """
         self.type = type
         self.value = value
+        self.submitButtonType = submitButtonType
+        self.submitButtonValue = submitButtonValue
+
+    
+    def submit_with_button(self):
+        return self.submitButtonType is not None and self.submitButtonValue is not None
 
 
 class RequestModel:
@@ -34,6 +40,7 @@ class RequestModel:
         self.cookies = cookies
         self.affects = affects
         self.vector = None
+        self.miscInputs = None
         self.attackType = None
         self.escapeChar = None
 
@@ -43,6 +50,11 @@ class RequestModel:
 
     def is_vector_defined(self):
         return self.vector is not None
+    
+
+    def set_misc_inputs(self, miscInputs: dict[str, By]):
+        # dict with key as input name/id... and value as By (and we put a random value).
+        self.miscInputs = miscInputs
 
 
     def set_attack(self, attackType: AttackType, escapeChar: str=None):
