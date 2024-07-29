@@ -64,7 +64,7 @@ def detect_html_tags_filters(requestor: Requestor, requestModel: RequestModel, u
             else:
                 if raw_payload in driver.page_source: bingo(message=f"Tag {tag} is interpreted !!!")
                 else: info(message=f"Tag {tag} isn't filtered")
-                
+
 
         except Exception as e:
             error(funcName="detect_filters", message=f"Error : {e}")

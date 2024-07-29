@@ -1,6 +1,6 @@
 from flask import Flask, render_template
 from pyngrok import ngrok
-from Sn00pXss.modules.request_bin.request_bin import RequestBin
+from modules.request_bin import RequestBin
 
 
 __author__ = "b3liott"
