@@ -42,7 +42,7 @@ class RequestModel:
     This class represents the parameters of the request to be sent to the target    
     """
     
-    def __init__(self, url: str, affects: str = None, cookies: dict=None):
+    def __init__(self, url: str, affects: str | None, cookies: dict=None):
         self.url = url
         self.cookies = cookies
         self.affects = affects

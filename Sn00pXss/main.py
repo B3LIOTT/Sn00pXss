@@ -4,6 +4,7 @@ from models import RequestModel, AttackType, AttackVector
 from selenium.webdriver.common.by import By
 from modules.requestor import Requestor
 from modules.logger import error, info
+import argparse
 
 
 __author__ = "b3liott"
@@ -30,27 +31,34 @@ ban = """
 """
 
 
+def get_args() -> list:
+    parser = argparse.ArgumentParser(description='Sn00pXss - XSS detection tool')
+    parser.add_argument('-u', '--url', type=str, help='Un argument optionnel', required=True)
+    parser.add_argument('-a', '--affects', type=str, help='Url which could be affected by an XSS', required=False)
+    #parser.add_argument('-v', '--vector', type=str, help='todo', required=True)
+
+    args = parser.parse_args()
+
+    return args.url, args.affects
+
+
 if __name__ == '__main__':
     print(ban)
-    choice = """
------------------------
-1. Test XSS
-2. Test Filters
------------------------
--> """
 
-    choice = int(input(choice))
-    
+    url, affected = get_args()
+
+    # Ask user for attack vector / type...
+    # TODO
+
     requestor = Requestor()
     
-    # test 1 : XSS DOM based Introduction
-    # url = "http://challenge01.root-me.org/web-client/ch32/"
+    # test 1 : XSS DOM based Introduction -> "http://challenge01.root-me.org/web-client/ch32/"
     
-    # test 2 : XSS Stored 1
-    url = "http://challenge01.root-me.org/web-client/ch18/"
+    # test 2 : XSS Stored 1 -> "http://challenge01.root-me.org/web-client/ch18/"
 
     rm = RequestModel(
-            url=url
+            url=url,
+            affects=affected
         )
     
     # test 2
@@ -65,27 +73,19 @@ if __name__ == '__main__':
 
     rm.set_vector(vector=vector)
 
-    if choice == 2:
-        # detect filters
-        filterModel = detect_filters(requestor=requestor, requestModel=rm)
-        info(filterModel)
+    # TODO: algo qui détecte le(s) type(s) d'attaque(s)
+    # test 1
+    # attacks = [(AttackType.ESCAPE_JS, "'")]
 
-    elif choice == 1:
-        # TODO: algo qui détecte le(s) type(s) d'attaque(s)
-        # test 1
-        # attacks = [(AttackType.ESCAPE_JS, "'")]
+    # test 2
+    attacks = [(AttackType.INJECT_HTML, None)]
 
-        # test 2
-        attacks = [(AttackType.INJECT_HTML, None)]
+    for attack in attacks:
+        # set attack type
+        rm.set_attack(attackType=attack[0], escapeChar=attack[1])
 
-        for attack in attacks:
-            # set attack type
-            rm.set_attack(attackType=attack[0], escapeChar=attack[1])
+        # detect xss
+        detect_xss(requestor=requestor, requestModel=rm)
 
-            # detect xss
-            detect_xss(requestor=requestor, requestModel=rm)
-
-    else:
-        error(message="Invalid choice")
 
     requestor.dispose()
