@@ -15,6 +15,7 @@ pip install -r requirements.txt
 ```
 
 Then you can create `.env` file and fill the information (see `.env-example`).
+
 For example:
 ```txt
 CHROME_DRIVER_PATH=/path/to/chromedriver-linux64/chromedriver
