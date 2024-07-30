@@ -14,4 +14,14 @@ First, install required python packages:
 pip install -r requirements.txt
 ```
 
+Then you can create `.env` file and fill the information (see `.env-example`).
+For example:
+```txt
+CHROME_DRIVER_PATH=/path/to/chromedriver-linux64/chromedriver
+CHROME_BINARY_PATH=/path/to/chrome-linux64/chrome
+```
+
+You can find both driver and binary here:
+https://googlechromelabs.github.io/chrome-for-testing/
+
 Then, wait for me to finish this project :)
