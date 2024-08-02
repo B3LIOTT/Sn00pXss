@@ -1,8 +1,9 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import NoAlertPresentException
 from models import RequestModel
-from modules.logger import error
+from modules.logger import error, info
 import os
 import dotenv
 
@@ -19,6 +20,7 @@ class Requestor:
         chrome_driver_path = os.getenv("CHROME_DRIVER_PATH")
         options = Options()
         options.binary_location = os.getenv("CHROME_BINARY_PATH")
+        options.add_argument('--incognito')
         options.add_argument("--headless")  # comment this line to see the browser
         service = Service(chrome_driver_path)
 
@@ -40,13 +42,24 @@ class Requestor:
                 self.driver.refresh()
         
         except Exception as e:
-            error(className=self.__class__.__name__, funcName='send_request', message=str(e))
+            error(funcName='send_request', message=str(e))
             self.dispose()
             exit(1)
 
 
     def get_affected(self, requestModel: RequestModel):
         self.send_request(requestModel=requestModel, url=requestModel.affects)
+
+
+    def clear_alerts(self):
+        while True:
+            try:
+                alert = self.driver.switch_to.alert
+                alert.accept()  # ou alert.dismiss() si vous voulez rejeter l'alerte
+                info(message="alert cleared") 
+
+            except NoAlertPresentException:
+                return
 
 
     def dispose(self):

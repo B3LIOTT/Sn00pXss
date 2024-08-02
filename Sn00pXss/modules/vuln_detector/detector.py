@@ -67,66 +67,58 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
     """
     Tests appropriate subset of payloads, based on filters
     """
-    try:
-        filterModel = FilterModel()
-        send_payload: callable = send_payload_by_input if requestModel.vector.type else send_payload_by_url
-        next_payload: callable = get_payload_generator(requestModel.attackType)
+    filterModel = FilterModel()
+    send_payload: callable = send_payload_by_input if requestModel.vector.type else send_payload_by_url
+    next_payload: callable = get_payload_generator(requestModel.attackType)
 
-        expected_position = detect_payload_position(requestor, requestModel, send_payload)
+    expected_position = detect_payload_position(requestor, requestModel, send_payload)
 
-        payload : Payload = None
-        failedData = []
+    payload : Payload = None
+    failedData = []
+
+    while payload:=next_payload(requestModel, filterModel, payload, failedData):
+        try:
+            info(message=f"Testing payload : {payload.value}")
+            send_payload(requestor=requestor, requestModel=requestModel, payload=payload.value)
+        
+        except UnexpectedAlertPresentException:
+            alert = requestor.driver.switch_to.alert
+            alert.accept()
+            bingo(message=f"Alert triggered with : {payload.value}\n")
+            return
+
+        except Exception as e:
+            error(funcName="fuzz (send_payload)", message=f"Error for {payload.value}: {e}")
+            continue
+
+        # wait for the page to load
+        #sleep(1)
+
+        # request the page which is affected by the payload (if not the same)
+        if requestModel.affects is not None:
+            requestor.get_affected()
 
 
-        while payload:=next_payload(requestModel, filterModel, payload, failedData):
+        if payload.payloadType == PayloadType.ALERT:
+            # check if alert is present
             try:
-                info(message=f"Testing payload : {payload.value}")
-                send_payload(requestor=requestor, requestModel=requestModel, payload=payload.value)
-            
-            except UnexpectedAlertPresentException:
+                WebDriverWait(requestor.driver, 2).until(EC.alert_is_present())
                 alert = requestor.driver.switch_to.alert
                 alert.accept()
                 bingo(message=f"Alert triggered with : {payload.value}\n")
                 return
+                
+            except NoAlertPresentException:
+                warn(message="No alert triggered")
 
-            except Exception as e:
-                error(funcName="fuzz (send_payload)", message=f"Error for {payload.value}: {e}")
-                continue
-
-            # wait for the page to load
-            #sleep(1)
-
-            # request the page which is affected by the payload (if not the same)
-            if requestModel.affects is not None:
-                requestor.get_affected()
-
-
-            if payload.payloadType == PayloadType.ALERT:
-                # check if alert is present
-                try:
-                    WebDriverWait(requestor.driver, 2).until(EC.alert_is_present())
-                    alert = requestor.driver.switch_to.alert
-                    alert.accept()
-                    bingo(message=f"Alert triggered with : {payload.value}\n")
-                    return
-                    
-                except NoAlertPresentException:
-                    warn(message="No alert triggered")
-
-                    # get the payload in the response
-                    result = requestor.driver.page_source[expected_position:expected_position+len(payload.value)]
-                    warn(message=f"Server response with payload : {result}\nAnalysing why the payload failed...\n")
-                    analyse_fail(result=result, usedPayload=payload, filterModel=filterModel, failedData=failedData)
-            
-            else:
-                # check request bin
-                raise NotImplementedError("Request bin not implemented yet")
-    
-    except UnexpectedAlertPresentException as e:
-        alert = requestor.driver.switch_to.alert
-        alert.accept()
-        warn(message=f"Unexpected alert: {e.alert_text}\n")
-        fuzz(requestor, requestModel)  
+                # get the payload in the response
+                result = requestor.driver.page_source[expected_position:expected_position+len(payload.value)]
+                warn(message=f"Server response with payload : {result}\nAnalysing why the payload failed...\n")
+                analyse_fail(result=result, usedPayload=payload, filterModel=filterModel, failedData=failedData)
+        
+        else:
+            # check request bin
+            raise NotImplementedError("Request bin not implemented yet")
 
 
     warn(message="No more payloads available, stopping the fuzzing process")

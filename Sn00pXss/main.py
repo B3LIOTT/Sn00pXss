@@ -76,6 +76,7 @@ if __name__ == '__main__':
 
     try:
         requestor = Requestor()
+        requestor.clear_alerts()
 
         rm = RequestModel(
                 url=url,
