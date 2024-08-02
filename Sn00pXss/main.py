@@ -42,9 +42,9 @@ if __name__ == '__main__':
         cae = config_already_exists(url, affected)
         if already_exists:=cae[0]:
             path = cae[1]
-            bingo(f"Configuration already exists: {path}")
+            bingo(f"Configuration already exists for {url}: {path}")
             info("Do you want to continue with this configuration ?")
-            if input("[Y/n] ->").lower() != 'y':
+            if input("[y/n] -> ").lower() != 'y':
                 # Ask user for attack vector / type...
                 config = get_params()
 
@@ -55,13 +55,14 @@ if __name__ == '__main__':
             else:
                 config = get_config(path)
         
-        config = get_params()
+        else:
+            config = get_params()
                 
     except Exception as e:
         error(f"An error occured during attack configuration: {e}")
         exit(1)
 
-    print("Attack configuration done !")
+    bingo("Attack configuration done !")
     print("Configuration:")
     for k, v in config.items():
         print(k, v)
@@ -80,9 +81,8 @@ if __name__ == '__main__':
         )
     
     # test 2
-    rm.set_misc_inputs(miscInputs={'titre': By.NAME})
+    rm.set_misc_inputs(miscInputs=config['misc_inputs'])
 
-    # set attack type
     # test 1
     # vector = AttackVector(type=By.NAME, value='number')
 

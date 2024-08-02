@@ -1,0 +1,8 @@
+misc_inputs:
+  titre: name
+submit:
+  by: css selector
+  name: input[type="submit"]
+vector:
+  by: xpath
+  name: message

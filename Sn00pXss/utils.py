@@ -60,7 +60,7 @@ Enter the name of the vector (id name, or class name, etc..., depending on the m
 ->""")
         
         misc_inputs = {}
-        print("Now you can add onther needed inputs for the request")
+        print("\nNow you can add onther needed inputs for the request")
         while True:
             misc_input = int(input(f"""
 How to locate the input ?
@@ -87,7 +87,7 @@ How to locate the submit button ?
         
         if submit_By != 0:
             config['submit'] = {}
-            config['submit']['by'] = submit_By
+            config['submit']['by'] = By_possibilities[submit_By-1]
             config['submit']['name'] = input("""
 Enter the name of the submit button (id name, or class name, etc..., depending on the method you chose):
 ->""")
@@ -107,7 +107,8 @@ def config_already_exists(url, affects):
 
 
 def save_config(url, affects, config):
-    path = xxhash.xxh64(f"{url}{affects}").hexdigest()
+    hash = xxhash.xxh64(f"{url}{affects}").hexdigest()
+    path = f"saved_configs/{hash}.yaml"
     with open(path, 'w') as file:
         yaml.dump(config, file, default_flow_style=False)
 
