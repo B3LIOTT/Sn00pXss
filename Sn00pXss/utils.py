@@ -89,8 +89,8 @@ How to locate the submit button ?
             config['submit'] = {}
             config['submit']['by'] = submit_By
             config['submit']['name'] = input("""
-                        Enter the name of the submit button (id name, or class name, etc..., depending on the method you chose):
-                        ->""")
+Enter the name of the submit button (id name, or class name, etc..., depending on the method you chose):
+->""")
             
         return config
 
@@ -98,20 +98,22 @@ How to locate the submit button ?
 
 
 def config_already_exists(url, affects):
-    file_path = f"saved_configs/{xxhash.xxh64(f"{url}{affects}").hexdigest()}.yaml"
+    hash = xxhash.xxh64(f"{url}{affects}").hexdigest()
+    file_path = f"saved_configs/{hash}.yaml"
     if os.path.exists(file_path):
         return True, file_path
 
     return False, file_path
 
 
-def save_config(path, config):
+def save_config(url, affects, config):
+    path = xxhash.xxh64(f"{url}{affects}").hexdigest()
     with open(path, 'w') as file:
         yaml.dump(config, file, default_flow_style=False)
 
 
 def get_config(path):
     with open(path, 'r') as file:
-        data = yaml.safe_load(file)
+        config = yaml.safe_load(file)
 
-    return data
+    return config

@@ -39,7 +39,9 @@ if __name__ == '__main__':
         url, affected = get_args()
 
         # check if the configuration already exists
-        if path:=config_already_exists(url, affected):
+        cae = config_already_exists(url, affected)
+        if already_exists:=cae[0]:
+            path = cae[1]
             bingo(f"Configuration already exists: {path}")
             info("Do you want to continue with this configuration ?")
             if input("[Y/n] ->").lower() != 'y':
@@ -52,6 +54,8 @@ if __name__ == '__main__':
                 
             else:
                 config = get_config(path)
+        
+        config = get_params()
                 
     except Exception as e:
         error(f"An error occured during attack configuration: {e}")
@@ -62,7 +66,8 @@ if __name__ == '__main__':
     for k, v in config.items():
         print(k, v)
 
-    save_config(url, affected, config)
+    if not already_exists:
+        save_config(url, affected, config)
 
     requestor = Requestor()
     
