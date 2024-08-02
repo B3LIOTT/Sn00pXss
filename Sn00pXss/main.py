@@ -3,8 +3,8 @@ from modules.filter_detector import detect_filters
 from models import RequestModel, AttackType, AttackVector
 from selenium.webdriver.common.by import By
 from modules.requestor import Requestor
-from modules.logger import error, info
-import argparse
+from modules.logger import error, info, bingo
+from utils import get_args, get_params, save_config, config_already_exists, get_config
 
 
 __author__ = "b3liott"
@@ -31,29 +31,49 @@ ban = """
 """
 
 
-def get_args() -> list:
-    parser = argparse.ArgumentParser(description='Sn00pXss - XSS detection tool')
-    parser.add_argument('-u', '--url', type=str, help='Un argument optionnel', required=True)
-    parser.add_argument('-a', '--affects', type=str, help='Url which could be affected by an XSS', required=False)
-    #parser.add_argument('-v', '--vector', type=str, help='todo', required=True)
-
-    args = parser.parse_args()
-
-    return args.url, args.affects
-
 
 if __name__ == '__main__':
     print(ban)
 
-    url, affected = get_args()
+    try:
+        url, affected = get_args()
 
-    # Ask user for attack vector / type...
-    # TODO
+        # check if the configuration already exists
+        if path:=config_already_exists(url, affected):
+            bingo(f"Configuration already exists: {path}")
+            info("Do you want to continue with this configuration ?")
+            if input("[Y/n] ->").lower() != 'y':
+                # Ask user for attack vector / type...
+                config = get_params()
+
+                if not config:
+                    # AUTO vector detection
+                    raise NotImplementedError("AUTO method is not implemented yet")
+                
+            else:
+                config = get_config(path)
+                
+    except Exception as e:
+        error(f"An error occured during attack configuration: {e}")
+        exit(1)
+
+    print("Attack configuration done !")
+    print("Configuration:")
+    print(f"URL: {url}")
+    print(f"Affected URL: {affected}")
+    print(f"Vector: {vector_By} - {vector_name}")
+    if submit_button:
+        print(f"Submit button: {submit_By} - {submit_name}")
+    
+    print("Misc inputs:")
+    for k, v in misc_inputs.items():
+        print(f"{k} - {v}")
+
+    save_config(url, affected, params)
 
     requestor = Requestor()
     
     # test 1 : XSS DOM based Introduction -> "http://challenge01.root-me.org/web-client/ch32/"
-    
     # test 2 : XSS Stored 1 -> "http://challenge01.root-me.org/web-client/ch18/"
 
     rm = RequestModel(
@@ -73,7 +93,8 @@ if __name__ == '__main__':
 
     rm.set_vector(vector=vector)
 
-    # TODO: algo qui détecte le(s) type(s) d'attaque(s)
+
+    # TODO: alg to detect the attack type
     # test 1
     # attacks = [(AttackType.ESCAPE_JS, "'")]
 
