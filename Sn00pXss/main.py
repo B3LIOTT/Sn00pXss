@@ -33,6 +33,9 @@ ban = """
 
 
 if __name__ == '__main__':
+    # test 1 : XSS DOM based Introduction -> "http://challenge01.root-me.org/web-client/ch32/"
+    # test 2 : XSS Stored 1 -> "http://challenge01.root-me.org/web-client/ch18/"
+
     print(ban)
 
     try:
@@ -73,22 +76,16 @@ if __name__ == '__main__':
 
     try:
         requestor = Requestor()
-        
-        # test 1 : XSS DOM based Introduction -> "http://challenge01.root-me.org/web-client/ch32/"
-        # test 2 : XSS Stored 1 -> "http://challenge01.root-me.org/web-client/ch18/"
 
         rm = RequestModel(
                 url=url,
                 affects=affected
             )
         
-        # test 2
+        # set misc inputs
         rm.set_misc_inputs(miscInputs=config['misc_inputs'])
 
-        # test 1
-        # vector = AttackVector(type=By.NAME, value='number')
-
-        # test 2
+        # set attack vector
         if 'submit' in config:
             vector = AttackVector(type=config['vector']['by'], value=config['vector']['name'], 
                                   submitButtonType=config['submit']['by'], submitButtonValue=config['submit']['name']
@@ -115,7 +112,7 @@ if __name__ == '__main__':
             detect_xss(requestor=requestor, requestModel=rm)
 
     except Exception as e:
-        error(message=f"An error occured: {e}")
+        error(funcName="main" ,message=f"An error occured: {e}")
 
     finally:
         requestor.dispose()

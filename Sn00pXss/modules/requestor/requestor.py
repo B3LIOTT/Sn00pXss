@@ -19,13 +19,13 @@ class Requestor:
         chrome_driver_path = os.getenv("CHROME_DRIVER_PATH")
         options = Options()
         options.binary_location = os.getenv("CHROME_BINARY_PATH")
-        options.add_argument("--headless")
+        options.add_argument("--headless")  # comment this line to see the browser
         service = Service(chrome_driver_path)
 
         self.driver = webdriver.Chrome(service=service, options=options)
         
     
-    def send_request(self, requestModel: RequestModel, url=None) -> webdriver:
+    def send_request(self, requestModel: RequestModel, url=None):
         try:
             if url is None:
                 url = requestModel.url
@@ -38,8 +38,6 @@ class Requestor:
                     self.driver.add_cookie(cookie)
 
                 self.driver.refresh()
-
-            return self.driver
         
         except Exception as e:
             error(className=self.__class__.__name__, funcName='send_request', message=str(e))
@@ -47,8 +45,8 @@ class Requestor:
             exit(1)
 
 
-    def get_affected(self, requestModel: RequestModel) -> webdriver:
-        return self.send_request(requestModel=requestModel, url=requestModel.affects)
+    def get_affected(self, requestModel: RequestModel):
+        self.send_request(requestModel=requestModel, url=requestModel.affects)
 
 
     def dispose(self):
