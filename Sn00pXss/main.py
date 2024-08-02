@@ -4,7 +4,7 @@ from models import RequestModel, AttackType, AttackVector
 from selenium.webdriver.common.by import By
 from modules.requestor import Requestor
 from modules.logger import error, info, bingo
-from utils import get_args, get_params, save_config, config_already_exists, get_config, get_By_from_str
+from utils import get_args, get_params, save_config, config_already_exists, get_config
 
 
 __author__ = "b3liott"
@@ -59,7 +59,7 @@ if __name__ == '__main__':
             config = get_params()
                 
     except Exception as e:
-        error(f"An error occured during attack configuration: {e}")
+        error(funcName='main', message=f"An error occured during attack configuration: {e}")
         exit(1)
 
     bingo("Attack configuration done !")
@@ -90,7 +90,9 @@ if __name__ == '__main__':
 
         # test 2
         if 'submit' in config:
-            vector = AttackVector(type=config['vector']['by'], value=config['vector']['name'], submitButtonType=config['submit']['by'], submitButtonValue=config['submit']['name'])
+            vector = AttackVector(type=config['vector']['by'], value=config['vector']['name'], 
+                                  submitButtonType=config['submit']['by'], submitButtonValue=config['submit']['name']
+                                  )
 
         else:
             vector = AttackVector(type=config['vector']['by'], value=config['vector']['name'])
@@ -113,8 +115,7 @@ if __name__ == '__main__':
             detect_xss(requestor=requestor, requestModel=rm)
 
     except Exception as e:
-        error(f"An error occured: {e}")
-        exit(1)
+        error(message=f"An error occured: {e}")
 
     finally:
         requestor.dispose()
