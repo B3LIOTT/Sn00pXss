@@ -105,18 +105,9 @@ def config_already_exists(url, affects):
     return False, file_path
 
 
-def save_config(path, params):
-    config = {}
-    if submit_button:=params[0]:
-        # If submit button is needed
-        vector_By, vector_name, submit_By, submit_name, misc_inputs = params[1:]
-        config
-        config['submit_button'] = {
-            'By': submit_By,
-            'name': submit_name
-        }
-    else:
-        vector_By, vector_name, misc_inputs = params[1:]
+def save_config(path, config):
+    with open(path, 'w') as file:
+        yaml.dump(config, file, default_flow_style=False)
 
 
 def get_config(path):

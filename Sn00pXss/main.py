@@ -59,17 +59,10 @@ if __name__ == '__main__':
 
     print("Attack configuration done !")
     print("Configuration:")
-    print(f"URL: {url}")
-    print(f"Affected URL: {affected}")
-    print(f"Vector: {vector_By} - {vector_name}")
-    if submit_button:
-        print(f"Submit button: {submit_By} - {submit_name}")
-    
-    print("Misc inputs:")
-    for k, v in misc_inputs.items():
-        print(f"{k} - {v}")
+    for k, v in config.items():
+        print(k, v)
 
-    save_config(url, affected, params)
+    save_config(url, affected, config)
 
     requestor = Requestor()
     
