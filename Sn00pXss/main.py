@@ -4,7 +4,7 @@ from models import RequestModel, AttackType, AttackVector
 from selenium.webdriver.common.by import By
 from modules.requestor import Requestor
 from modules.logger import error, info, bingo
-from utils import get_args, get_params, save_config, config_already_exists, get_config
+from utils import get_args, get_params, save_config, config_already_exists, get_config, get_By_from_str
 
 
 __author__ = "b3liott"
@@ -70,41 +70,51 @@ if __name__ == '__main__':
     if not already_exists:
         save_config(url, affected, config)
 
-    requestor = Requestor()
-    
-    # test 1 : XSS DOM based Introduction -> "http://challenge01.root-me.org/web-client/ch32/"
-    # test 2 : XSS Stored 1 -> "http://challenge01.root-me.org/web-client/ch18/"
 
-    rm = RequestModel(
-            url=url,
-            affects=affected
-        )
-    
-    # test 2
-    rm.set_misc_inputs(miscInputs=config['misc_inputs'])
+    try:
+        requestor = Requestor()
+        
+        # test 1 : XSS DOM based Introduction -> "http://challenge01.root-me.org/web-client/ch32/"
+        # test 2 : XSS Stored 1 -> "http://challenge01.root-me.org/web-client/ch18/"
 
-    # test 1
-    # vector = AttackVector(type=By.NAME, value='number')
+        rm = RequestModel(
+                url=url,
+                affects=affected
+            )
+        
+        # test 2
+        rm.set_misc_inputs(miscInputs=config['misc_inputs'])
 
-    # test 2
-    vector = AttackVector(type=By.NAME, value='message', submitButtonType=By.CSS_SELECTOR, submitButtonValue='input[type="submit"]')
+        # test 1
+        # vector = AttackVector(type=By.NAME, value='number')
 
-    rm.set_vector(vector=vector)
+        # test 2
+        if 'submit' in config:
+            vector = AttackVector(type=config['vector']['by'], value=config['vector']['name'], submitButtonType=config['submit']['by'], submitButtonValue=config['submit']['name'])
 
+        else:
+            vector = AttackVector(type=config['vector']['by'], value=config['vector']['name'])
 
-    # TODO: alg to detect the attack type
-    # test 1
-    # attacks = [(AttackType.ESCAPE_JS, "'")]
-
-    # test 2
-    attacks = [(AttackType.INJECT_HTML, None)]
-
-    for attack in attacks:
-        # set attack type
-        rm.set_attack(attackType=attack[0], escapeChar=attack[1])
-
-        # detect xss
-        detect_xss(requestor=requestor, requestModel=rm)
+        rm.set_vector(vector=vector)
 
 
-    requestor.dispose()
+        # TODO: alg to detect the attack type
+        # test 1
+        # attacks = [(AttackType.ESCAPE_JS, "'")]
+
+        # test 2
+        attacks = [(AttackType.INJECT_HTML, None)]
+
+        for attack in attacks:
+            # set attack type
+            rm.set_attack(attackType=attack[0], escapeChar=attack[1])
+
+            # detect xss
+            detect_xss(requestor=requestor, requestModel=rm)
+
+    except Exception as e:
+        error(f"An error occured: {e}")
+        exit(1)
+
+    finally:
+        requestor.dispose()

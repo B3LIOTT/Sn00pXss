@@ -53,7 +53,7 @@ Choose the attack method:
         config['vector']['by'] = By_possibilities[int(input(f"""
 How to locate the vector ?
 {By_possibilities_str}
-->"""))]
+->"""))-1]
         
         config['vector']['name'] = input("""
 Enter the name of the vector (id name, or class name, etc..., depending on the method you chose):
@@ -118,3 +118,4 @@ def get_config(path):
         config = yaml.safe_load(file)
 
     return config
+
