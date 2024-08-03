@@ -9,7 +9,7 @@ This project aims to find XSS vulnerabilities. It uses `selenium` to interact wi
 
 A request bin is also embeded in this project, which is very useful to steal cookies for example. To be sure that this tool works at all, I've tested it on multiple Root-me challenges that I have solved before.
 
-Each vulnerability detection builds a configuration file in `Sn00pXss/saved_configs/` which represents the web page under test. It contains all the data needed by this script to inject payloads (submit buttons, vector identifier etc...). So, if you manually enter the configuration of a web page in the MANUAL attack mode, it will be saved and can be reused.
+Each vulnerability detection builds a configuration file in `Sn00pXss/saved_configs/` which represents the web page under test. It contains all the data needed by this script to inject payloads (submit buttons, vector identifier etc...). So, if you manually enter the configuration of a web page in the MANUAL attack mode, it will be saved and can be reused. It is automatically detected: if you launch the script with the same parameters (url, affected url) as before, the file name = hash(url + affected url).yaml is the same.
 
 
 ## Usage
