@@ -74,46 +74,46 @@ if __name__ == '__main__':
         save_config(url, affected, config)
 
 
-    try:
-        requestor = Requestor()
-        requestor.clear_alerts()
+    # try:
+    requestor = Requestor()
+    requestor.clear_alerts()
 
-        rm = RequestModel(
-                url=url,
-                affects=affected
-            )
-        
-        # set misc inputs
-        rm.set_misc_inputs(miscInputs=config['misc_inputs'])
+    rm = RequestModel(
+            url=url,
+            affects=affected
+        )
+    
+    # set misc inputs
+    rm.set_misc_inputs(miscInputs=config['misc_inputs'])
 
-        # set attack vector
-        if 'submit' in config:
-            vector = AttackVector(type=config['vector']['by'], value=config['vector']['name'], 
-                                  submitButtonType=config['submit']['by'], submitButtonValue=config['submit']['name']
-                                  )
+    # set attack vector
+    if 'submit' in config:
+        vector = AttackVector(type=config['vector']['by'], value=config['vector']['name'], 
+                                submitButtonType=config['submit']['by'], submitButtonValue=config['submit']['name']
+                                )
 
-        else:
-            vector = AttackVector(type=config['vector']['by'], value=config['vector']['name'])
+    else:
+        vector = AttackVector(type=config['vector']['by'], value=config['vector']['name'])
 
-        rm.set_vector(vector=vector)
+    rm.set_vector(vector=vector)
 
 
-        # TODO: alg to detect the attack type
-        # test 1
-        # attacks = [(AttackType.ESCAPE_JS, "'")]
+    # TODO: alg to detect the attack type
+    # test 1
+    # attacks = [(AttackType.ESCAPE_JS, "'")]
 
-        # test 2
-        attacks = [(AttackType.INJECT_HTML, None)]
+    # test 2
+    attacks = [(AttackType.INJECT_HTML, None)]
 
-        for attack in attacks:
-            # set attack type
-            rm.set_attack(attackType=attack[0], escapeChar=attack[1])
+    for attack in attacks:
+        # set attack type
+        rm.set_attack(attackType=attack[0], escapeChar=attack[1])
 
-            # detect xss
-            detect_xss(requestor=requestor, requestModel=rm)
+        # detect xss
+        detect_xss(requestor=requestor, requestModel=rm)
 
-    except Exception as e:
-        error(funcName="main" ,message=f"An error occured: {e}")
+    # except Exception as e:
+    #     error(funcName="main" ,message=f"An error occured: {e}")
 
-    finally:
-        requestor.dispose()
+    # finally:
+    requestor.dispose()

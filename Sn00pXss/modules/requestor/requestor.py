@@ -55,7 +55,7 @@ class Requestor:
         while True:
             try:
                 alert = self.driver.switch_to.alert
-                alert.accept()  # ou alert.dismiss() si vous voulez rejeter l'alerte
+                alert.accept()
                 info(message="alert cleared") 
 
             except NoAlertPresentException:

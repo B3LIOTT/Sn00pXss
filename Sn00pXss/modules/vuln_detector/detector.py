@@ -102,7 +102,6 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
         if payload.payloadType == PayloadType.ALERT:
             # check if alert is present
             try:
-                WebDriverWait(requestor.driver, 2).until(EC.alert_is_present())
                 alert = requestor.driver.switch_to.alert
                 alert.accept()
                 bingo(message=f"Alert triggered with : {payload.value}\n")
@@ -113,7 +112,7 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
 
                 # get the payload in the response
                 result = requestor.driver.page_source[expected_position:expected_position+len(payload.value)]
-                warn(message=f"Server response with payload : {result}\nAnalysing why the payload failed...\n")
+                warn(message=f"Server response with payload : {result}\n->  Analysing why the payload failed...\n")
                 analyse_fail(result=result, usedPayload=payload, filterModel=filterModel, failedData=failedData)
         
         else:
@@ -161,14 +160,14 @@ def detect_xss(requestor: Requestor, requestModel: RequestModel):
     """
 
     big_info(message=f"Detecting XSS for attack type : {requestModel.attackType.name}")
-    try:
-        assert(requestModel.is_vector_defined())
-        assert(requestModel.is_attack_defined())
+    #try:
+    assert(requestModel.is_vector_defined())
+    assert(requestModel.is_attack_defined())
 
-        fuzz(requestor, requestModel)
+    fuzz(requestor, requestModel)
 
-    except Exception as e:
-        error(funcName="detect_xss", message=f"Error : {e}")
+    # except Exception as e:
+    #     error(funcName="detect_xss", message=str(e))
 
     return 
 
