@@ -20,7 +20,7 @@ BASE_PAYLOADS = {
     ],
     "INJECT_HTML": [
         {
-            "payload": """<zboub>FUNCTION("ARGS")</zboub>""",
+            "payload": """<BAD>FUNCTION("ARGS")</BAD>""",
             "used_chars": ['<', '>', '(', ')', '"', '/', 'FUNCTION', 'ARGS']
         },
         {
