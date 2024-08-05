@@ -42,7 +42,6 @@ class Requestor:
 
                 self.driver.refresh()
 
-            print(self.driver.get_cookie('status'))
         except Exception as e:
             error(funcName='send_request', message=str(e))
             self.dispose()
