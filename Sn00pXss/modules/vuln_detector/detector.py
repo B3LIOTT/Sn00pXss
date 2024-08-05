@@ -41,7 +41,7 @@ def send_payload_by_url(requestor: Requestor, requestModel: RequestModel, payloa
 def send_payload_by_cookies(requestor: Requestor, requestModel: RequestModel, payload: str):
     cookie_vector_key = requestModel.vector.value
     requestModel.set_cookie(key=cookie_vector_key, value=payload)
-    
+
     requestor.send_request(requestModel=requestModel)
 
 
@@ -172,14 +172,14 @@ def detect_xss(requestor: Requestor, requestModel: RequestModel):
     """
 
     big_info(message=f"Detecting XSS for attack type : {requestModel.attackType.name}")
-    #try:
-    assert(requestModel.is_vector_defined())
-    assert(requestModel.is_attack_defined())
+    try:
+        assert(requestModel.is_vector_defined())
+        assert(requestModel.is_attack_defined())
 
-    fuzz(requestor, requestModel)
+        fuzz(requestor, requestModel)
 
-    # except Exception as e:
-    #     error(funcName="detect_xss", message=str(e))
+    except Exception as e:
+        error(funcName="detect_xss", message=str(e))
 
     return 
 

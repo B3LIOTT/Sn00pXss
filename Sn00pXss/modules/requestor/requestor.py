@@ -31,16 +31,18 @@ class Requestor:
         try:
             if url is None:
                 url = requestModel.url
-          
             self.driver.get(url)
-
-            # set cookies
-            if requestModel.cookies is not None:
-                for cookie in requestModel.cookies:
-                    self.driver.add_cookie(cookie)
+            
+            if len(requestModel.cookies) > 0:
+                # set cookies
+                info(message=f"Cookies: {requestModel.cookies}")
+                for name, value in requestModel.cookies.items():
+                    cookies_path = self.driver.get_cookie(name=name)['path']
+                    self.driver.add_cookie({'name': name, 'value': value, 'path': cookies_path})
 
                 self.driver.refresh()
-        
+
+            print(self.driver.get_cookie('status'))
         except Exception as e:
             error(funcName='send_request', message=str(e))
             self.dispose()

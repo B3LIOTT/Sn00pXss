@@ -75,53 +75,53 @@ if __name__ == '__main__':
         save_config(url, affected, config)
 
 
-    # try:
-    requestor = Requestor()
-    requestor.clear_alerts()
+    try:
+        requestor = Requestor()
+        requestor.clear_alerts()
 
-    rm = RequestModel(
-            url=url,
-            affects=affected
-        )
+        rm = RequestModel(
+                url=url,
+                affects=affected
+            )
 
-    # set attack vector
-    if config['vector']['isCookies']:
-        vector = AttackVector(isVectorCookies=config['vector']['isCookies'], value=config['vector']['name'])
-
-    else:
-        # set misc inputs
-        rm.set_misc_inputs(miscInputs=config['misc_inputs'])
-        if 'submit' in config:
-            vector = AttackVector(isVectorCookies=config['vector']['isCookies'], type=config['vector']['by'], value=config['vector']['name'], 
-                                submitButtonType=config['submit']['by'], submitButtonValue=config['submit']['name']
-                                )
+        # set attack vector
+        if config['vector']['isCookies']:
+            vector = AttackVector(isVectorCookies=config['vector']['isCookies'], value=config['vector']['name'])
 
         else:
-            vector = AttackVector(isVectorCookies=config['vector']['isCookies'], type=config['vector']['by'], value=config['vector']['name'])
+            # set misc inputs
+            rm.set_misc_inputs(miscInputs=config['misc_inputs'])
+            if 'submit' in config:
+                vector = AttackVector(isVectorCookies=config['vector']['isCookies'], type=config['vector']['by'], value=config['vector']['name'], 
+                                    submitButtonType=config['submit']['by'], submitButtonValue=config['submit']['name']
+                                    )
 
-    rm.set_vector(vector=vector)
+            else:
+                vector = AttackVector(isVectorCookies=config['vector']['isCookies'], type=config['vector']['by'], value=config['vector']['name'])
+
+        rm.set_vector(vector=vector)
 
 
-    # TODO: alg to detect the attack type
-    # test 1
-    # attacks = [(AttackType.ESCAPE_JS, "'")]
-    # TODO: detect which tech isi used (for example, detect if it's Angular)
+        # TODO: alg to detect the attack type
+        # test 1
+        # attacks = [(AttackType.ESCAPE_JS, "'")]
+        # TODO: detect which tech isi used (for example, detect if it's Angular)
 
-    # test 2
-    #attacks = [(AttackType.INJECT_HTML, None)]
+        # test 2
+        #attacks = [(AttackType.INJECT_HTML, None)]
 
-    # test 3
-    attacks = [(AttackType.ESCAPE_HTML, '"')]
+        # test 3
+        attacks = [(AttackType.ESCAPE_HTML, '"')]
 
-    for attack in attacks:
-        # set attack type
-        rm.set_attack(attackType=attack[0], escapeChar=attack[1])
+        for attack in attacks:
+            # set attack type
+            rm.set_attack(attackType=attack[0], escapeChar=attack[1])
 
-        # detect xss
-        detect_xss(requestor=requestor, requestModel=rm)
+            # detect xss
+            detect_xss(requestor=requestor, requestModel=rm)
 
-    # except Exception as e:
-    #     error(funcName="main" ,message=f"An error occured: {e}")
+    except Exception as e:
+        error(funcName="main" ,message=f"An error occured: {e}")
 
-    # finally:
-    requestor.dispose()
+    finally:
+        requestor.dispose()

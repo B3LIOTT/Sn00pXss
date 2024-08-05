@@ -172,6 +172,10 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
     return update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.attackType)
 
 
+def build_ESCAPE_HTML_payload(requestModel: RequestModel, filterModel: FilterModel, lastTestedPayload: Payload | None, failedData: list) -> Payload | None:
+    raise NotImplementedError
+
+
 def get_payload_generator(attackType: AttackType) -> callable:
     """
     Returns the payload generator for the given attack type
@@ -182,5 +186,6 @@ def get_payload_generator(attackType: AttackType) -> callable:
     elif attackType == AttackType.INJECT_HTML:
         return build_INJECT_HTML_payload
     
-    else:
-        raise NotImplementedError(f"Attack type {attackType} not implemented yet")
+    elif attackType == AttackType.ESCAPE_HTML:
+        return build_ESCAPE_HTML_payload
+    
