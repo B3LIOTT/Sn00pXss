@@ -35,6 +35,7 @@ ban = """
 if __name__ == '__main__':
     # test 1 : XSS DOM based Introduction -> "http://challenge01.root-me.org/web-client/ch32/"
     # test 2 : XSS Stored 1 -> "http://challenge01.root-me.org/web-client/ch18/"
+    # test 3 : XSS DOM Based 'Eval' -> "http://challenge01.root-me.org/web-client/ch34/"
 
     print(ban)
 
