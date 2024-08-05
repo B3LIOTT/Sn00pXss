@@ -20,10 +20,6 @@ BASE_PAYLOADS = {
     ],
     "INJECT_HTML": [
         {
-            "payload": """<BAD>FUNCTION("ARGS")</BAD>""",
-            "used_chars": ['<', '>', '(', ')', '"', '/', 'FUNCTION', 'ARGS']
-        },
-        {
             "payload": """<script>FUNCTION("ARGS")</script>""",
             "used_chars": ['<', '>', '(', ')', '"', '/', 'FUNCTION', 'ARGS']
         },
@@ -172,8 +168,12 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
     return update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.attackType)
 
 
+
 def build_ESCAPE_HTML_payload(requestModel: RequestModel, filterModel: FilterModel, lastTestedPayload: Payload | None, failedData: list) -> Payload | None:
-    raise NotImplementedError
+    # TODO: replace HTML_PLAYLOAD by those in INJECT_HTML
+    
+    raise NotImplementedError("ESCAPE_JS not implemented yet")
+
 
 
 def get_payload_generator(attackType: AttackType) -> callable:
