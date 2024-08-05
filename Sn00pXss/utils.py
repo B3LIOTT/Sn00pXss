@@ -50,14 +50,26 @@ Choose the attack method:
     if method == 2:
         config = {}
         config['vector'] = {}
-        config['vector']['by'] = By_possibilities[int(input(f"""
+        By_possibilities_index = int(input(f"""
 How to locate the vector ?
+[0] - In cookies
 {By_possibilities_str}
-->"""))-1]
+->"""))
         
+        if By_possibilities_index != 0:
+            config['vector']['isCookies'] = False
+            config['vector']['by'] = By_possibilities[By_possibilities_index-1]
+        
+        else:
+            # is the vector is cookies, we dont need to know how to locate it in the DOM and to fill a form
+            # we only need to know the name of the cookie param
+            config['vector']['isCookies'] = True
+
         config['vector']['name'] = input("""
 Enter the name of the vector (id name, or class name, etc..., depending on the method you chose):
 ->""")
+        
+        if By_possibilities_index == 0: return config
         
         misc_inputs = {}
         print("\nNow you can add onther needed inputs for the request")

@@ -35,7 +35,7 @@ ban = """
 if __name__ == '__main__':
     # test 1 : XSS DOM based Introduction -> "http://challenge01.root-me.org/web-client/ch32/"
     # test 2 : XSS Stored 1 -> "http://challenge01.root-me.org/web-client/ch18/"
-    # test 3 : XSS DOM Based 'Eval' -> "http://challenge01.root-me.org/web-client/ch34/"
+    # test 3 : XSS Stored 2 -> "http://challenge01.root-me.org/web-client/ch19/"
 
     print(ban)
 
@@ -83,18 +83,21 @@ if __name__ == '__main__':
             url=url,
             affects=affected
         )
-    
-    # set misc inputs
-    rm.set_misc_inputs(miscInputs=config['misc_inputs'])
 
     # set attack vector
-    if 'submit' in config:
-        vector = AttackVector(type=config['vector']['by'], value=config['vector']['name'], 
+    if config['vector']['isCookies']:
+        vector = AttackVector(isVectorCookies=config['vector']['isCookies'], value=config['vector']['name'])
+
+    else:
+        # set misc inputs
+        rm.set_misc_inputs(miscInputs=config['misc_inputs'])
+        if 'submit' in config:
+            vector = AttackVector(isVectorCookies=config['vector']['isCookies'], type=config['vector']['by'], value=config['vector']['name'], 
                                 submitButtonType=config['submit']['by'], submitButtonValue=config['submit']['name']
                                 )
 
-    else:
-        vector = AttackVector(type=config['vector']['by'], value=config['vector']['name'])
+        else:
+            vector = AttackVector(isVectorCookies=config['vector']['isCookies'], type=config['vector']['by'], value=config['vector']['name'])
 
     rm.set_vector(vector=vector)
 
@@ -102,9 +105,13 @@ if __name__ == '__main__':
     # TODO: alg to detect the attack type
     # test 1
     # attacks = [(AttackType.ESCAPE_JS, "'")]
+    # TODO: detect which tech isi used (for example, detect if it's Angular)
 
     # test 2
-    attacks = [(AttackType.INJECT_HTML, None)]
+    #attacks = [(AttackType.INJECT_HTML, None)]
+
+    # test 3
+    attacks = [(AttackType.ESCAPE_HTML, '"')]
 
     for attack in attacks:
         # set attack type

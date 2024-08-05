@@ -1,4 +1,5 @@
 misc_inputs: {}
 vector:
+  isCookies: false
   by: name
   name: number

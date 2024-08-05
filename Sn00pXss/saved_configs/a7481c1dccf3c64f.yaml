@@ -4,5 +4,6 @@ submit:
   by: css selector
   name: input[type="submit"]
 vector:
+  isCookies: false
   by: name
   name: message

@@ -38,6 +38,13 @@ def send_payload_by_url(requestor: Requestor, requestModel: RequestModel, payloa
     requestor.send_request(requestModel=requestModel, url=f"{requestModel.url}/?{requestModel.vector.value}={payload}")
 
 
+def send_payload_by_cookies(requestor: Requestor, requestModel: RequestModel, payload: str):
+    cookie_vector_key = requestModel.vector.value
+    requestModel.set_cookie(key=cookie_vector_key, value=payload)
+    
+    requestor.send_request(requestModel=requestModel)
+
+
 def detect_payload_position(requestor: Requestor, requestModel: RequestModel, send_payload: callable):
     """
     Detect the position of the payload in the page
@@ -68,7 +75,12 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
     Tests appropriate subset of payloads, based on filters
     """
     filterModel = FilterModel()
-    send_payload: callable = send_payload_by_input if requestModel.vector.type else send_payload_by_url
+
+    if requestModel.vector.isVectorCookies:
+        send_payload: callable = send_payload_by_cookies
+    else:
+        send_payload: callable = send_payload_by_input if requestModel.vector.type else send_payload_by_url
+
     next_payload: callable = get_payload_generator(requestModel.attackType)
 
     expected_position = detect_payload_position(requestor, requestModel, send_payload)

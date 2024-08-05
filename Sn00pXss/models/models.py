@@ -23,10 +23,11 @@ class AttackVector:
     Defines the attack vector to be used (by name, id, etc...)
     """
     
-    def __init__(self, type: By | None, value: str, submitButtonType: By = None, submitButtonValue: str = None):
+    def __init__(self, isVectorCookies: bool, value: str, type: By = None, submitButtonType: By = None, submitButtonValue: str = None):
         """
         If the type is None, the vector is a GET parameter with the value as key
         """
+        self.isVectorCookies = isVectorCookies
         self.type = type
         self.value = value
         self.submitButtonType = submitButtonType
@@ -37,12 +38,13 @@ class AttackVector:
         return self.submitButtonType is not None and self.submitButtonValue is not None
 
 
+
 class RequestModel:
     """
     This class represents the parameters of the request to be sent to the target    
     """
     
-    def __init__(self, url: str, affects: str | None, cookies: dict=None):
+    def __init__(self, url: str, affects: str | None, cookies: dict={}):
         self.url = url
         self.cookies = cookies
         self.affects = affects
@@ -64,12 +66,17 @@ class RequestModel:
         self.miscInputs = miscInputs
 
 
+    def set_cookie(self, key, value):
+        self.cookies[key] = value
+
+
     def set_attack(self, attackType: AttackType, escapeChar: str=None):
         self.attackType = attackType
         self.escapeChar = escapeChar
 
     def is_attack_defined(self):
         return self.attackType is not None
+
     
 
 
