@@ -108,10 +108,10 @@ if __name__ == '__main__':
         # TODO: detect which tech isi used (for example, detect if it's Angular)
 
         # test 2
-        #attacks = [(AttackType.INJECT_HTML, None)]
+        attacks = [(AttackType.INJECT_HTML, None)]
 
         # test 3
-        attacks = [(AttackType.ESCAPE_HTML, '"')]
+        #attacks = [(AttackType.ESCAPE_HTML, '"')]
 
         for attack in attacks:
             # set attack type

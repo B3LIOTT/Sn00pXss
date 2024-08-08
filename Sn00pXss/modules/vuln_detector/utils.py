@@ -84,10 +84,16 @@ def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list
 
         else:
             # get the next equivalent character which is not in the failed data
-            for char in EQUIVALENTS[data]:
-                if char not in failedData:
-                    newChar = char
-                    break
+
+            # if it is a '(' or ')', we firt try tu use `` (for example alert`1` works too)
+            if (data['value'] == '(' or data['value'] == ')') and not '`' in failedData:
+                newChar = '`'
+            
+            else:
+                for char in EQUIVALENTS[data]:
+                    if char not in failedData:
+                        newChar = char
+                        break
         
         if newChar is None:
             return
