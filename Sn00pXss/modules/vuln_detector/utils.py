@@ -38,7 +38,7 @@ BASE_PAYLOADS = {
     ],
     "ESCAPE_HTML": [
         {
-            "payload": """ " /> HTML_PAYLOADTAG_TO_ESCAPE  """,
+            "payload": """ "/>HTML_PAYLOADTAG_TO_ESCAPE  """,
             "used_chars": ['"', '/', '>', '<']
         }
     ]
@@ -142,7 +142,7 @@ def build_ESCAPE_JS_payload(requestModel: RequestModel, filterModel: FilterModel
 
         return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced, referredIndex=0)
 
-    return update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.attackType)
+    return update_payload_with_failed_data(lastTestedPayload, failedData)
 
 
 
@@ -178,7 +178,7 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
 
         return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced, referredIndex=newIndex)
 
-    return update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.attackType)
+    return update_payload_with_failed_data(lastTestedPayload, failedData)
 
 
 
@@ -215,7 +215,7 @@ def build_ESCAPE_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
 
         return Payload(value=payload_str, payloadType=payloadType, usedChars=usedChars, usedCharsReplaced=usedCharsReplaced, referredIndex=newIndex)
 
-    return update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.attackType)
+    return update_payload_with_failed_data(lastTestedPayload, failedData)
 
 
 
