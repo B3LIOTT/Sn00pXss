@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoAlertPresentException
-from models import RequestModel
+from models import RequestModel, CookieException
 from modules.logger import error, info, warn
 from time import sleep
 import dotenv
@@ -43,9 +43,12 @@ class Requestor:
                     try:
                         self.driver.add_cookie({'name': name, 'value': value, 'path': current_cookie['path']})
                     except Exception as e:
-                        warn(message=f"Cookie ({name}:{value}) not set. It might contains some special characters which makes the cookie invalid.")
+                        raise CookieException(f"Cookie ({name}:{value}) not set. It might contains some special characters which makes the cookie invalid.")
 
                 self.driver.refresh()
+
+        except CookieException as e:
+            raise e
 
         except Exception as e:
             error(funcName='send_request', message=str(e))

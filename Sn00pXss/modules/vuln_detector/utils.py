@@ -67,50 +67,50 @@ def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list
     # replace the failed data with the next possible value
     toRemove = []
     for data in failedData:
-        if data['type'] == "FUNCTION":  # TODO: improve
-            # if eval is filtered, we try to use the constructor instead
-            if data['value'] == 'eval' and not failedData.__contains__('[') and not failedData.__contains__(']'): 
-                newChar = '[].filter.constructor' 
+        if data['value'] in lastTestedPayload.usedCharsReplaced:            
+            if data['type'] == "FUNCTION":  # TODO: improve
+                # if eval is filtered, we try to use the constructor instead
+                if data['value'] == 'eval' and not failedData.__contains__('[') and not failedData.__contains__(']'): 
+                    newChar = '[].filter.constructor' 
 
-            # if the original function is not eval and [].filter.construtor, we try to use eval
-            elif data['value'] != '[].filter.constructor': newChar = 'eval'
+                # if the original function is not eval and [].filter.construtor, we try to use eval
+                elif data['value'] != '[].filter.constructor': newChar = 'eval'
 
-            toRemove.append(data)
+                toRemove.append(data)
 
-        elif data['type'] == "ARGS":
-            if lastTestedPayload.usedCharsReplaced.__contains__('eval'):
-                args = lastTestedPayload.usedCharsReplaced[lastTestedPayload.usedChars.index('ARGS')]
-                func = lastTestedPayload.usedCharsReplaced[lastTestedPayload.usedChars.index('FUNCTION')]
-                toEncode = f"{func}({args})"
-                newChar =f"atob({b64.b64encode(toEncode.encode()).decode()})"
+            elif data['type'] == "ARGS":
+                if lastTestedPayload.usedCharsReplaced.__contains__('eval'):
+                    args = lastTestedPayload.usedCharsReplaced[lastTestedPayload.usedChars.index('ARGS')]
+                    func = lastTestedPayload.usedCharsReplaced[lastTestedPayload.usedChars.index('FUNCTION')]
+                    toEncode = f"{func}({args})"
+                    newChar =f"atob({b64.b64encode(toEncode.encode()).decode()})"
+                else:
+                    # TODO: verify if args contains special characters which need to be replaced
+                    pass
+
+                toRemove.append(data)
+
             else:
-                # TODO: verify if args contains special characters which need to be replaced
-                pass
+                # get the next equivalent character which is not in the failed data
 
-            toRemove.append(data)
-
-        else:
-            # get the next equivalent character which is not in the failed data
-
-            # if it is a '(' or ')', we firt try tu use `` (for example alert`1` works too)
-            if (data['value'] == '(' or data['value'] == ')') and not '`' in failedData:
-                newChar = '`'
+                # if it is a '(' or ')', we firt try tu use `` (for example alert`1` works too)
+                if (data['value'] == '(' or data['value'] == ')') and not '`' in failedData:
+                    newChar = '`'
+                
+                else:
+                    for char in EQUIVALENTS[data['value']]:
+                        if char not in failedData:
+                            newChar = char
+                            break
             
-            else:
-                print(data)
-                for char in EQUIVALENTS[data['value']]:
-                    if char not in failedData:
-                        newChar = char
-                        break
-        
-        if newChar is None:
-            return
-        
-        # remove old failed functions and args
-        for data in toRemove: failedData.remove(data)
-        
-        lastTestedPayload.value = lastTestedPayload.value.replace(data['value'], newChar)
-        replace_list_element(lastTestedPayload.usedCharsReplaced, data['value'], newChar)
+            if newChar is None:
+                return
+            
+            # remove old failed functions and args
+            for data in toRemove: failedData.remove(data)
+            
+            lastTestedPayload.value = lastTestedPayload.value.replace(data['value'], newChar)
+            replace_list_element(lastTestedPayload.usedCharsReplaced, data['value'], newChar)
 
     return lastTestedPayload
     
@@ -163,6 +163,7 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
             newIndex = 0
         else:
             newIndex = lastTestedPayload.referredIndex+1
+            if newIndex >= len(BASE_PAYLOADS['INJECT_HTML']): return
 
         payload = BASE_PAYLOADS['INJECT_HTML'][newIndex]
         payload_str = f"{TEST_INPUT}{payload['payload']}EOP"
@@ -190,6 +191,7 @@ def build_ESCAPE_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
             newIndex = 0
         else:
             newIndex = lastTestedPayload.referredIndex+1
+            if newIndex >= len(BASE_PAYLOADS['INJECT_HTML']): return
         
         # --- We generate an HTML_INJECTION payload to replace HTML_PAYLOAD ---
         inj_payload = BASE_PAYLOADS['INJECT_HTML'][newIndex]

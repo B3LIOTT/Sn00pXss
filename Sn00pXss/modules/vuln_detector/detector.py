@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoAlertPresentException, UnexpectedAlertPresentException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from models import RequestModel, FilterModel, PayloadType, Payload
+from models import RequestModel, FilterModel, PayloadType, Payload, CookieException
 from modules.requestor.requestor import Requestor
 from modules.logger import info, error, bingo, warn, big_info
 from .utils import get_payload_generator, TEST_INPUT
@@ -98,6 +98,11 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
     while payload:=next_payload(requestModel, filterModel, payload, failedData):
         try:
             info(message=f"Testing payload : {payload.value}")
+
+            # TODO: remove
+            input(f"\nPress enter to continue...\n")
+            # ------------
+            
             send_payload(requestor=requestor, requestModel=requestModel, payload=payload.value)
         
         except UnexpectedAlertPresentException:
@@ -105,6 +110,11 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
             alert.accept()
             bingo(message=f"Alert triggered with : {payload.value}\n")
             return
+
+        except CookieException as e:
+            warn(message=str(e))
+            failedData.clear() # TODO: instead of clearing the list, we should add the data which break the cookie
+            continue
 
         except Exception as e:
             error(funcName="fuzz (send_payload)", message=f"Error for {payload.value}: {e}")
@@ -172,6 +182,8 @@ def analyse_fail(result, usedPayload: Payload, filterModel: FilterModel, failedD
                 filterModel.add_filtered_char(data['value'])
             
             failedData.append(data.copy())
+    
+    warn(message=f"Failed data: {failedData}")
 
 
 
