@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import NoAlertPresentException
 from models import RequestModel
-from modules.logger import error, info
+from modules.logger import error, info, warn
 from time import sleep
 import dotenv
 import os
@@ -40,7 +40,10 @@ class Requestor:
                 for name, value in requestModel.cookies.items():
                     current_cookie = self.driver.get_cookie(name=name)
                     value = value.replace(' ', '')
-                    self.driver.add_cookie({'name': name, 'value': value, 'path': current_cookie['path']})
+                    try:
+                        self.driver.add_cookie({'name': name, 'value': value, 'path': current_cookie['path']})
+                    except Exception as e:
+                        warn(message=f"Cookie ({name}:{value}) not set. It might contains some special characters which makes the cookie invalid.")
 
                 self.driver.refresh()
 

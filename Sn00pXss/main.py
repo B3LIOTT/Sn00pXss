@@ -62,6 +62,10 @@ if __name__ == '__main__':
         
         else:
             config = get_params()
+
+    except KeyboardInterrupt:
+        sys.stdout.flush()
+        warn(message="\rOUCH !\nIt's time to sleep X - X")
                 
     except Exception as e:
         error(funcName='main', message=f"An error occured during attack configuration: {e}")
@@ -109,10 +113,10 @@ if __name__ == '__main__':
     # TODO: detect which tech is used (for example, detect if it's Angular)
 
     # test 2
-    attacks = [(AttackType.INJECT_HTML, None)]
+    #attacks = [(AttackType.INJECT_HTML, None)]
 
     # test 3
-    #attacks = [(AttackType.ESCAPE_HTML, '')]
+    attacks = [(AttackType.ESCAPE_HTML, '')]
 
     for attack in attacks:
         # set attack type
