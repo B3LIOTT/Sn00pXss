@@ -69,6 +69,13 @@ def detect_payload_position(requestor: Requestor, requestModel: RequestModel, se
         requestor.dispose()
         exit(1)
 
+    
+def get_end_position(start_index: int, page_source: str):
+    """
+    Get the end position of the payload
+    """
+    return page_source.index("EOP", start_index)
+
 
 def fuzz(requestor: Requestor, requestModel: RequestModel):
     """
@@ -83,7 +90,7 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
 
     next_payload: callable = get_payload_generator(requestModel.attackType)
 
-    expected_position = detect_payload_position(requestor, requestModel, send_payload)
+    expected_position_start = detect_payload_position(requestor, requestModel, send_payload)
 
     payload : Payload = None
     failedData = []
@@ -123,8 +130,8 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
                 warn(message="No alert triggered")
 
                 # get the payload in the response
-                result = requestor.driver.page_source[expected_position:expected_position+len(payload.value)]
-                warn(message=f"Server response with payload : {result}\n->  Analysing why the payload failed...\n")
+                result = requestor.driver.page_source[expected_position_start:get_end_position(expected_position_start, requestor.driver.page_source)]
+                warn(message=f"Server responded with payload : {result}\n->  Analysing why the payload failed...\n")
                 analyse_fail(result=result, usedPayload=payload, filterModel=filterModel, failedData=failedData)
         
         else:
@@ -148,7 +155,7 @@ def analyse_fail(result, usedPayload: Payload, filterModel: FilterModel, failedD
     }
     for k in range(len(usedPayload.usedChars)):
         # check if the character is in the result
-        if ucr:=usedPayload.usedCharsReplaced[k] not in result:
+        if (ucr:=usedPayload.usedCharsReplaced[k]) not in result:
             # distinguish the type of data: char, function, args
             if usedPayload.usedChars[k] == "FUNCTION":
                 data["type"] = "FUNCTION"
@@ -160,9 +167,11 @@ def analyse_fail(result, usedPayload: Payload, filterModel: FilterModel, failedD
                 data["value"] = ucr
             
             else:
+                data["type"] = "CHAR"
+                data["value"] = ucr
                 filterModel.add_filtered_char(data['value'])
             
-            failedData.append(data)
+            failedData.append(data.copy())
 
 
 
@@ -176,10 +185,11 @@ def detect_xss(requestor: Requestor, requestModel: RequestModel):
         assert(requestModel.is_vector_defined())
         assert(requestModel.is_attack_defined())
         
-        fuzz(requestor, requestModel)
-
+        
     except Exception as e:
         error(funcName="detect_xss", message=str(e))
+    
+    fuzz(requestor, requestModel)
 
     return 
 

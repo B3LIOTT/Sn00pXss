@@ -38,7 +38,7 @@ BASE_PAYLOADS = {
     ],
     "ESCAPE_HTML": [
         {
-            "payload": """ "/>HTML_PAYLOADTAG_TO_ESCAPE  """,
+            "payload": """"/>HTML_PAYLOADTAG_TO_ESCAPE """,
             "used_chars": ['"', '/', '>', '<']
         }
     ]
@@ -97,7 +97,8 @@ def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list
                 newChar = '`'
             
             else:
-                for char in EQUIVALENTS[data]:
+                print(data)
+                for char in EQUIVALENTS[data['value']]:
                     if char not in failedData:
                         newChar = char
                         break
@@ -128,7 +129,7 @@ def build_ESCAPE_JS_payload(requestModel: RequestModel, filterModel: FilterModel
         for base_payload in BASE_PAYLOADS["ESCAPE_JS"]: 
             if base_payload['used_chars'][0] == requestModel.escapeChar: payload = base_payload;break
 
-        payload_str = f"{TEST_INPUT}{payload['payload']}"
+        payload_str = f"{TEST_INPUT}{payload['payload']}EOP"
 
         # TODO: mettre toutes les fonctions equivalentes au alert, puis au fetch, 
         payload_str = payload_str.replace("FUNCTION", "alert")
@@ -164,7 +165,7 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
             newIndex = lastTestedPayload.referredIndex+1
 
         payload = BASE_PAYLOADS['INJECT_HTML'][newIndex]
-        payload_str = f"{TEST_INPUT}{payload['payload']}"
+        payload_str = f"{TEST_INPUT}{payload['payload']}EOP"
 
         # TODO: generate payloads for alert and fetch 
         payload_str = payload_str.replace("FUNCTION", "alert")
@@ -206,7 +207,7 @@ def build_ESCAPE_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
         # ---------------------------------------------------------------------
 
         payload = BASE_PAYLOADS['ESCAPE_HTML'][0]
-        payload_str = f"{TEST_INPUT}{payload['payload']}"
+        payload_str = f"{TEST_INPUT}{payload['payload']}EOP"
         
         payload_str = payload_str.replace("HTML_PAYLOAD", inj_payload_str)
         payload_str = payload_str.replace("TAG_TO_ESCAPE", requestModel.escapeChar)
