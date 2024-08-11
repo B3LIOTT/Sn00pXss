@@ -43,7 +43,7 @@ class Requestor:
                     try:
                         self.driver.add_cookie({'name': name, 'value': value, 'path': current_cookie['path']})
                     except Exception as e:
-                        raise CookieException(f"Cookie ({name}:{value}) not set. It might contains some special characters which makes the cookie invalid.")
+                        raise CookieException(f"Cookie ({name}:{value}) not set. It might contains some special characters which makes the cookie invalid, or try again to ensure that the browser had the time to set cookies.")
 
                 self.driver.refresh()
 
