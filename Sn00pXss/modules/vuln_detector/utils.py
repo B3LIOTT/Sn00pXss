@@ -109,7 +109,8 @@ def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list
                         initial_char = data['value'] 
 
                     for char in EQUIVALENTS[initial_char]:
-                        if char not in failedData:
+                        d = {'value': char, 'type': 'CHAR'}
+                        if d not in failedData:
                             newChar = char
                             break
             
