@@ -20,8 +20,8 @@ BASE_PAYLOADS = {
     ],
     "INJECT_HTML": [
         {
-            "payload": """<script>FUNCTION("ARGS")</script>""",
-            "used_chars": ['<', '>', '(', ')', '"', '/', 'FUNCTION', 'ARGS']
+            "payload": """<script>FUNCTION('ARGS')</script>""",
+            "used_chars": ['<', '>', '(', ')', "'", '/', 'FUNCTION', 'ARGS']
         },
         {
             "payload": """<img src="x" onerror="FUNCTION('ARGS')">""",
@@ -193,7 +193,10 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
 
         return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced, referredIndex=newIndex)
 
-    return update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.escapeChar)
+    newPayload = update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.escapeChar)
+    if not newPayload: return build_ESCAPE_HTML_payload(requestModel, filterModel, lastTestedPayload, failedData)
+
+    return newPayload
 
 
 
@@ -231,7 +234,10 @@ def build_ESCAPE_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
 
         return Payload(value=payload_str, payloadType=payloadType, usedChars=usedChars, usedCharsReplaced=usedCharsReplaced, referredIndex=newIndex)
 
-    return update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.escapeChar)
+    newPayload = update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.escapeChar)
+    if not newPayload: return build_ESCAPE_HTML_payload(requestModel, filterModel, lastTestedPayload, failedData)
+
+    return newPayload
 
 
 

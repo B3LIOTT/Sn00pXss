@@ -161,7 +161,7 @@ def analyse_fail(result, usedPayload: Payload, filterModel: FilterModel, failedD
 
     data = {
         "value": "",
-        "type": ""
+        "type": "",
     }
     for k in range(len(usedPayload.usedChars)):
         # check if the character is in the result
@@ -193,15 +193,15 @@ def detect_xss(requestor: Requestor, requestModel: RequestModel):
     """ 
 
     big_info(message=f"Detecting XSS for attack type : {requestModel.attackType.name}")
-    try:
-        assert(requestModel.is_vector_defined())
-        assert(requestModel.is_attack_defined())
-        
-        
-    except Exception as e:
-        error(funcName="detect_xss", message=str(e))
+    # try:
+    assert(requestModel.is_vector_defined())
+    assert(requestModel.is_attack_defined())
     
     fuzz(requestor, requestModel)
+
+    # except Exception as e:
+    #     error(funcName="detect_xss", message=str(e))
+
 
     return 
 
