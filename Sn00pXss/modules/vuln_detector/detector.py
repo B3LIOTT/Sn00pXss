@@ -96,13 +96,13 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
     failedData = []
 
     while payload:=next_payload(requestModel, filterModel, payload, failedData):
+
+        # TODO: remove
+        input(f"\nPress enter to continue...\n")
+        # ------------
+
         try:
             info(message=f"Testing payload : {payload.value}")
-
-            # TODO: remove
-            input(f"\nPress enter to continue...\n")
-            # ------------
-            
             send_payload(requestor=requestor, requestModel=requestModel, payload=payload.value)
         
         except UnexpectedAlertPresentException:

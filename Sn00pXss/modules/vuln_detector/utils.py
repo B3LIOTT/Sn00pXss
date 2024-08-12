@@ -59,7 +59,7 @@ def union(l1: list, l2: list) -> list:
     return l
 
 
-def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list) -> Payload | None:
+def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list, escapeChar: str | None) -> Payload | None:
     """
     Updates the payload by replacing the failed data with the next possible value
     """
@@ -103,7 +103,9 @@ def update_payload_with_failed_data(lastTestedPayload: Payload, failedData: list
                         # get the not encoded associated char (example: %22 is associated with ")
                         # TODO: do something more efficient
                         for char in EQUIVALENTS.keys():
-                            if d in EQUIVALENTS[char]:
+                            if d in EQUIVALENTS[char] and d != escapeChar:
+                                # if the char is not the escape char, we take it
+                                # if it is, we cant take it because it will destroy the payload
                                 initial_char = char
                     else:
                         initial_char = data['value'] 
@@ -154,7 +156,7 @@ def build_ESCAPE_JS_payload(requestModel: RequestModel, filterModel: FilterModel
 
         return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced, referredIndex=0)
 
-    return update_payload_with_failed_data(lastTestedPayload, failedData)
+    return update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.escapeChar)
 
 
 
@@ -191,7 +193,7 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
 
         return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced, referredIndex=newIndex)
 
-    return update_payload_with_failed_data(lastTestedPayload, failedData)
+    return update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.escapeChar)
 
 
 
@@ -229,7 +231,7 @@ def build_ESCAPE_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
 
         return Payload(value=payload_str, payloadType=payloadType, usedChars=usedChars, usedCharsReplaced=usedCharsReplaced, referredIndex=newIndex)
 
-    return update_payload_with_failed_data(lastTestedPayload, failedData)
+    return update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.escapeChar)
 
 
 
