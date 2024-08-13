@@ -104,7 +104,7 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
         try:
             info(message=f"Testing payload : {payload.value}")
             send_payload(requestor=requestor, requestModel=requestModel, payload=payload.value)
-        
+            requestor.driver.refresh()
         except UnexpectedAlertPresentException:
             alert = requestor.driver.switch_to.alert
             alert.accept()

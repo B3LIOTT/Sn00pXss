@@ -38,4 +38,3 @@ while next_payload(data):
 
 AMELIORER LES CHANGEMENTS DE FONCTIONS ET D'ARGS
 
-

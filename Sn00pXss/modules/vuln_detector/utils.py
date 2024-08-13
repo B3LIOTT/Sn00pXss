@@ -38,7 +38,7 @@ BASE_PAYLOADS = {
     ],
     "ESCAPE_HTML": [
         {
-            "payload": """"/>HTML_PAYLOADTAG_TO_ESCAPE""",
+            "payload": """">HTML_PAYLOADTAG_TO_ESCAPE""",
             "used_chars": ['"', '/', '>', '<']
         }
     ]
@@ -194,7 +194,9 @@ def build_INJECT_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
         return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced, referredIndex=newIndex)
 
     newPayload = update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.escapeChar)
-    if not newPayload: return build_ESCAPE_HTML_payload(requestModel, filterModel, lastTestedPayload, failedData)
+    if not newPayload: 
+        failedData.clear()
+        return build_INJECT_HTML_payload(requestModel, failedData, lastTestedPayload, failedData)
 
     return newPayload
 
@@ -235,7 +237,9 @@ def build_ESCAPE_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
         return Payload(value=payload_str, payloadType=payloadType, usedChars=usedChars, usedCharsReplaced=usedCharsReplaced, referredIndex=newIndex)
 
     newPayload = update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.escapeChar)
-    if not newPayload: return build_ESCAPE_HTML_payload(requestModel, filterModel, lastTestedPayload, failedData)
+    if not newPayload: 
+        failedData.clear()
+        return build_ESCAPE_HTML_payload(requestModel, failedData, lastTestedPayload, failedData)
 
     return newPayload
 
