@@ -1,3 +1,11 @@
+affects: null
+url: http://challenge01.root-me.org/web-client/ch19/
+misc_inputs:
+  titre: name
+  message: name
+submit:
+  by: css selector
+  name: input[type="submit"]
 vector:
   isCookies: true
   name: status

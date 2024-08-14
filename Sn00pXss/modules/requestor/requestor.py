@@ -22,12 +22,22 @@ class Requestor:
         options = Options()
         options.binary_location = os.getenv("CHROME_BINARY_PATH")
         options.add_argument('--incognito')
-        options.add_argument("--headless")  # comment this line to see the browser
+        #options.add_argument("--headless")  # comment this line to see the browser
         service = Service(chrome_driver_path)
 
         self.driver = webdriver.Chrome(service=service, options=options)
         
     
+    def set_cookies(self, cookies: dict):
+        for name, value in cookies.items():
+            current_cookie = self.driver.get_cookie(name=name)
+            value = value.replace(' ', '')
+            try:
+                self.driver.add_cookie({'name': name, 'value': value, 'path': current_cookie['path']})
+            except Exception:
+                raise CookieException(f"Cookie ({name}:{value}) not set. It might contains some special characters which makes the cookie invalid, or try again to ensure that the browser had the time to set cookies.")
+
+
     def send_request(self, requestModel: RequestModel, url=None):
         try:
             if url is None:
@@ -35,20 +45,8 @@ class Requestor:
             self.driver.get(url)
 
             if len(requestModel.cookies) > 0:
-                # set cookies
-                info(message=f"Cookies: {requestModel.cookies}")
-                for name, value in requestModel.cookies.items():
-                    current_cookie = self.driver.get_cookie(name=name)
-                    value = value.replace(' ', '')
-                    try:
-                        self.driver.add_cookie({'name': name, 'value': value, 'path': current_cookie['path']})
-                    except Exception as e:
-                        raise CookieException(f"Cookie ({name}:{value}) not set. It might contains some special characters which makes the cookie invalid, or try again to ensure that the browser had the time to set cookies.")
-
+                self.set_cookies(cookies=requestModel.cookies)
                 self.driver.refresh()
-
-        except CookieException as e:
-            raise e
 
         except Exception as e:
             error(funcName='send_request', message=str(e))

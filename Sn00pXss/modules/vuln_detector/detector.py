@@ -12,26 +12,32 @@ from time import sleep
 
 
 
-
-def send_payload_by_input(requestor: Requestor, requestModel: RequestModel, payload: str):
-    requestor.send_request(requestModel=requestModel)
-
-    # write the payload in the vulnerable input
-    input = requestor.driver.find_element(requestModel.vector.type, requestModel.vector.value)
-    input.send_keys(payload)
-
-    # write data in other required inputs   
+def send(requestor: Requestor, requestModel: RequestModel, vulnerableInput = None):
+    # write data in other required inputs 
     if requestModel.miscInputs is not None:
         for key, value in requestModel.miscInputs.items():
             input = requestor.driver.find_element(value, key)
             input.send_keys("This is random data")
 
     if requestModel.vector.submit_with_button():
+        # submit the form by clicking the button if we need to (= if ENTER is not enough)
         submit = requestor.driver.find_element(requestModel.vector.submitButtonType, requestModel.vector.submitButtonValue)
         submit.click()
-    else:
-        input.send_keys(Keys.ENTER)
 
+    elif requestModel.vector.isVectorCookies:
+        # if the vector is a cookie, we need to refresh the page to apply the cookie
+        requestor.send_request(requestModel=requestModel)
+
+    elif vulnerableInput is not None:
+        vulnerableInput.send_keys(Keys.ENTER)
+
+
+def send_payload_by_input(requestor: Requestor, requestModel: RequestModel, payload: str):
+    # write the payload in the vulnerable input
+    input = requestor.driver.find_element(requestModel.vector.type, requestModel.vector.value)
+    input.send_keys(payload)
+
+    send(requestor, requestModel, vulnerableInput=input)
 
 
 def send_payload_by_url(requestor: Requestor, requestModel: RequestModel, payload: str):
@@ -40,9 +46,11 @@ def send_payload_by_url(requestor: Requestor, requestModel: RequestModel, payloa
 
 def send_payload_by_cookies(requestor: Requestor, requestModel: RequestModel, payload: str):
     cookie_vector_key = requestModel.vector.value
-    requestModel.set_cookie(key=cookie_vector_key, value=payload)
+    #requestModel.set_cookie(key=cookie_vector_key, value=payload)
+    requestor.set_cookies({cookie_vector_key: payload})
 
-    requestor.send_request(requestModel=requestModel)
+    send(requestor, requestModel)
+
 
 
 def detect_payload_position(requestor: Requestor, requestModel: RequestModel, send_payload: callable):
@@ -83,6 +91,9 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
     """
     filterModel = FilterModel()
 
+    # initiate the vulnerable page
+    requestor.send_request(requestModel=requestModel)
+
     if requestModel.vector.isVectorCookies:
         send_payload: callable = send_payload_by_cookies
     else:
@@ -104,7 +115,7 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
         try:
             info(message=f"Testing payload : {payload.value}")
             send_payload(requestor=requestor, requestModel=requestModel, payload=payload.value)
-            requestor.driver.refresh()
+   
         except UnexpectedAlertPresentException:
             alert = requestor.driver.switch_to.alert
             alert.accept()

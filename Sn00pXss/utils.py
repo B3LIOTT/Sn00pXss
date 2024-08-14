@@ -39,7 +39,7 @@ def get_args() -> list:
     return args.url, args.affects
 
 
-def get_params():
+def get_params(url, affected):
     method = int(input("""
 Choose the attack method:
 [1] - AUTO
@@ -49,6 +49,8 @@ Choose the attack method:
     
     if method == 2:
         config = {}
+        config['url'] = url
+        config['affects'] = affected
         config['vector'] = {}
         By_possibilities_index = int(input(f"""
 How to locate the vector ?
@@ -61,7 +63,7 @@ How to locate the vector ?
             config['vector']['by'] = By_possibilities[By_possibilities_index-1]
         
         else:
-            # is the vector is cookies, we dont need to know how to locate it in the DOM and to fill a form
+            # if the vector is a cookie param, we dont need to know how to locate it in the DOM and to fill a form
             # we only need to know the name of the cookie param
             config['vector']['isCookies'] = True
 
@@ -69,8 +71,7 @@ How to locate the vector ?
 Enter the name of the vector (id name, or class name, etc..., depending on the method you chose):
 ->""")
         
-        if By_possibilities_index == 0: return config
-        
+        # if there are some other inputs to fill in the form in order to correctly send the payload
         misc_inputs = {}
         print("\nNow you can add onther needed inputs for the request")
         while True:

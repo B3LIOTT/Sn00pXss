@@ -61,7 +61,8 @@ if __name__ == '__main__':
                 config = get_config(path)
         
         else:
-            config = get_params()
+            config = get_params(url, affected)
+            save_config(url, affected, config)
 
     except KeyboardInterrupt:
         sys.stdout.flush()
@@ -75,10 +76,7 @@ if __name__ == '__main__':
     print("Configuration:")
     for k, v in config.items():
         print(k, v)
-
-    if not already_exists:
-        save_config(url, affected, config)
-
+        
 
     # try:
     requestor = Requestor()
@@ -89,20 +87,16 @@ if __name__ == '__main__':
             affects=affected
         )
 
-    # set attack vector
-    if config['vector']['isCookies']:
-        vector = AttackVector(isVectorCookies=config['vector']['isCookies'], value=config['vector']['name'])
+    # set misc inputs
+    rm.set_misc_inputs(miscInputs=config['misc_inputs'])
+    type = config['vector']['by'] if not config['vector']['isCookies'] else None
+    if 'submit' in config:
+        vector = AttackVector(isVectorCookies=config['vector']['isCookies'], type=type, value=config['vector']['name'], 
+                            submitButtonType=config['submit']['by'], submitButtonValue=config['submit']['name']
+                            )
 
     else:
-        # set misc inputs
-        rm.set_misc_inputs(miscInputs=config['misc_inputs'])
-        if 'submit' in config:
-            vector = AttackVector(isVectorCookies=config['vector']['isCookies'], type=config['vector']['by'], value=config['vector']['name'], 
-                                submitButtonType=config['submit']['by'], submitButtonValue=config['submit']['name']
-                                )
-
-        else:
-            vector = AttackVector(isVectorCookies=config['vector']['isCookies'], type=config['vector']['by'], value=config['vector']['name'])
+        vector = AttackVector(isVectorCookies=config['vector']['isCookies'], type=type, value=config['vector']['name'])
 
     rm.set_vector(vector=vector)
 
