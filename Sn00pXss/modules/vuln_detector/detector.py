@@ -109,7 +109,7 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
     while payload:=next_payload(requestModel, filterModel, payload, failedData):
 
         # TODO: remove
-        input(f"\nPress enter to continue...\n")
+        # input(f"\nPress enter to continue...\n")
         # ------------
 
         try:
@@ -132,12 +132,11 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
             continue
 
         # wait for the page to load
-        #sleep(1)
+        # sleep(1)
 
         # request the page which is affected by the payload (if not the same)
         if requestModel.affects is not None:
             requestor.get_affected()
-
 
         if payload.payloadType == PayloadType.ALERT:
             # check if alert is present

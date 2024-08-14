@@ -12,25 +12,32 @@ __author__ = "b3liott"
 
 
 ban = """
-==================================
+=========================================================================================
 
-      ,-~~-.___.
-     / |  '     \         
-    (  )         0  
-     \_/-, ,----'        __    
-        ====            / /
-       /  \-'~;        / /   
-      /  __/~|  ______/ /    
-    =(  _____| (________|
+                                ,-~~-.___.
+                                / |  '     \         
+                                (  )         0  
+                                \_/-, ,----'        __    
+                                    ====            / /
+                                /  \-'~;        / /   
+                                /  __/~|  ______/ /    
+                                =(  _____| (________|
 
-    
-<script>alert("Sn00pXss")</script>
-          
-            By b3liott
+                                
+                            <script>alert("Sn00pXss")</script>
+                                    
+                                        By b3liott
 
-==================================
+=========================================================================================
 """
 
+info_ban = """This tool isn't finished yet, for instance it doesn't support the AUTO method.
+It has been tested only on the following challenges:
+- XSS DOM based Introduction -> "http://challenge01.root-me.org/web-client/ch32/"
+- XSS Stored 1 -> "http://challenge01.root-me.org/web-client/ch18/"
+- XSS Stored 2 -> "http://challenge01.root-me.org/web-client/ch19/"
+ 
+"""
 
 
 if __name__ == '__main__':
@@ -39,6 +46,7 @@ if __name__ == '__main__':
     # test 3 : XSS Stored 2 -> "http://challenge01.root-me.org/web-client/ch19/"
 
     print(ban)
+    warn(message=info_ban)
 
     try:
         url, affected = get_args()

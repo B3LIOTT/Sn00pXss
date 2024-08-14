@@ -22,7 +22,7 @@ class Requestor:
         options = Options()
         options.binary_location = os.getenv("CHROME_BINARY_PATH")
         options.add_argument('--incognito')
-        #options.add_argument("--headless")  # comment this line to see the browser
+        options.add_argument("--headless")  # comment this line to see the browser
         service = Service(chrome_driver_path)
 
         self.driver = webdriver.Chrome(service=service, options=options)

