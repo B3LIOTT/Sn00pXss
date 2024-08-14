@@ -1,0 +1,6 @@
+affects: null
+misc_inputs: {}
+url: http://challenge01.root-me.org/web-client/ch26/
+vector:
+  isCookies: false
+  name: p

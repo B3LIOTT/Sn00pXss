@@ -36,6 +36,7 @@ It has been tested only on the following challenges:
 - XSS DOM based Introduction -> "http://challenge01.root-me.org/web-client/ch32/"
 - XSS Stored 1 -> "http://challenge01.root-me.org/web-client/ch18/"
 - XSS Stored 2 -> "http://challenge01.root-me.org/web-client/ch19/"
+- XSS Volatile -> "http://challenge01.root-me.org/web-client/ch26/"
  
 """
 
@@ -44,6 +45,7 @@ if __name__ == '__main__':
     # test 1 : XSS DOM based Introduction -> "http://challenge01.root-me.org/web-client/ch32/"
     # test 2 : XSS Stored 1 -> "http://challenge01.root-me.org/web-client/ch18/"
     # test 3 : XSS Stored 2 -> "http://challenge01.root-me.org/web-client/ch19/"
+    # test 4 : XSS Volatile -> "http://challenge01.root-me.org/web-client/ch26/"
 
     print(ban)
     warn(message=info_ban)
@@ -97,7 +99,11 @@ if __name__ == '__main__':
 
     # set misc inputs
     rm.set_misc_inputs(miscInputs=config['misc_inputs'])
-    type = config['vector']['by'] if not config['vector']['isCookies'] else None
+    if 'by' in config['vector']:
+        type = config['vector']['by'] if not config['vector']['isCookies'] else None
+    else: 
+        type = None
+
     if 'submit' in config:
         vector = AttackVector(isVectorCookies=config['vector']['isCookies'], type=type, value=config['vector']['name'], 
                             submitButtonType=config['submit']['by'], submitButtonValue=config['submit']['name']
@@ -115,10 +121,13 @@ if __name__ == '__main__':
     # TODO: detect which tech is used (for example, detect if it's Angular)
 
     # test 2
-    #attacks = [(AttackType.INJECT_HTML, None)]
+    # attacks = [(AttackType.INJECT_HTML, None)]
 
     # test 3
-    attacks = [(AttackType.ESCAPE_HTML, '')]
+    # attacks = [(AttackType.ESCAPE_HTML, '')]
+
+    # test 4
+    attacks = [(AttackType.INJECT_EVENT, None)]
 
     for attack in attacks:
         # set attack type

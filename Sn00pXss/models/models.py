@@ -16,7 +16,8 @@ class AttackType(Enum):
     ESCAPE_JS = "ESCAPE_JS"
     ESCAPE_HTML = "ESCAPE_HTML"
     INJECT_HTML = "INJECT_HTML"
-
+    INJECT_EVENT = "INJECT_EVENT"
+    
 
 class AttackVector:
     """

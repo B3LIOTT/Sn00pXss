@@ -56,13 +56,14 @@ Choose the attack method:
 How to locate the vector ?
 [0] - In cookies
 {By_possibilities_str}
+[9] - In URL
 ->"""))
         
-        if By_possibilities_index != 0:
+        if By_possibilities_index != 0 and By_possibilities_index != 9:
             config['vector']['isCookies'] = False
             config['vector']['by'] = By_possibilities[By_possibilities_index-1]
         
-        else:
+        elif By_possibilities_index == 0:
             # if the vector is a cookie param, we dont need to know how to locate it in the DOM and to fill a form
             # we only need to know the name of the cookie param
             config['vector']['isCookies'] = True
@@ -73,7 +74,7 @@ Enter the name of the vector (id name, or class name, etc..., depending on the m
         
         # if there are some other inputs to fill in the form in order to correctly send the payload
         misc_inputs = {}
-        print("\nNow you can add onther needed inputs for the request")
+        print("\nNow you can add other needed inputs for the request")
         while True:
             misc_input = int(input(f"""
 How to locate the input ?
