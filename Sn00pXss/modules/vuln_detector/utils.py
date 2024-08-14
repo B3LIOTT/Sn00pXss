@@ -265,5 +265,5 @@ def get_payload_generator(attackType: AttackType) -> callable:
         return build_ESCAPE_HTML_payload
     
     elif attackType == AttackType.INJECT_EVENT:
-        raise NotImplementedError # build_INJECT_EVENT_payload
+        raise NotImplementedError(f"{attackType} not implemented yet") # build_INJECT_EVENT_payload
     

@@ -4,7 +4,7 @@ from models import RequestModel, AttackType, AttackVector
 from selenium.webdriver.common.by import By
 from modules.requestor import Requestor
 from modules.logger import error, info, bingo, warn
-from utils import get_args, get_params, save_config, config_already_exists, get_config
+from utils import get_args, get_params, save_config, config_already_exists, get_config, print_config
 import sys
 
 
@@ -84,64 +84,62 @@ if __name__ == '__main__':
 
     bingo("Attack configuration done !")
     print("Configuration:")
-    for k, v in config.items():
-        print(k, v)
-        
+    print_config(config)     
 
-    # try:
-    requestor = Requestor()
-    requestor.clear_alerts()
+    try:
+        requestor = Requestor()
+        requestor.clear_alerts()
 
-    rm = RequestModel(
-            url=url,
-            affects=affected
-        )
+        rm = RequestModel(
+                url=url,
+                affects=affected
+            )
 
-    # set misc inputs
-    rm.set_misc_inputs(miscInputs=config['misc_inputs'])
-    if 'by' in config['vector']:
-        type = config['vector']['by'] if not config['vector']['isCookies'] else None
-    else: 
-        type = None
+        # set misc inputs
+        rm.set_misc_inputs(miscInputs=config['misc_inputs'])
+        if 'by' in config['vector']:
+            type = config['vector']['by'] if not config['vector']['isCookies'] else None
+        else: 
+            type = None
 
-    if 'submit' in config:
-        vector = AttackVector(isVectorCookies=config['vector']['isCookies'], type=type, value=config['vector']['name'], 
-                            submitButtonType=config['submit']['by'], submitButtonValue=config['submit']['name']
-                            )
+        if 'submit' in config:
+            vector = AttackVector(isVectorCookies=config['vector']['isCookies'], type=type, value=config['vector']['name'], 
+                                submitButtonType=config['submit']['by'], submitButtonValue=config['submit']['name']
+                                )
 
-    else:
-        vector = AttackVector(isVectorCookies=config['vector']['isCookies'], type=type, value=config['vector']['name'])
+        else:
+            vector = AttackVector(isVectorCookies=config['vector']['isCookies'], type=type, value=config['vector']['name'])
 
-    rm.set_vector(vector=vector)
+        rm.set_vector(vector=vector)
 
 
-    # TODO: alg to detect the attack type
-    # test 1
-    # attacks = [(AttackType.ESCAPE_JS, "'")]
-    # TODO: detect which tech is used (for example, detect if it's Angular)
+        # TODO: alg to detect the attack type
+        # test 1
+        # attacks = [(AttackType.ESCAPE_JS, "'")]
+        # TODO: detect which tech is used (for example, detect if it's Angular)
 
-    # test 2
-    # attacks = [(AttackType.INJECT_HTML, None)]
+        # test 2
+        # attacks = [(AttackType.INJECT_HTML, None)]
 
-    # test 3
-    # attacks = [(AttackType.ESCAPE_HTML, '')]
+        # test 3
+        # attacks = [(AttackType.ESCAPE_HTML, '')]
 
-    # test 4
-    attacks = [(AttackType.INJECT_EVENT, None)]
+        # test 4
+        attacks = [(AttackType.INJECT_EVENT, None)]
 
-    for attack in attacks:
-        # set attack type
-        rm.set_attack(attackType=attack[0], escapeChar=attack[1])
+        for attack in attacks:
+            # set attack type
+            rm.set_attack(attackType=attack[0], escapeChar=attack[1])
 
-        # detect xss
-        detect_xss(requestor=requestor, requestModel=rm)
+            # detect xss
+            detect_xss(requestor=requestor, requestModel=rm)
 
-    # except KeyboardInterrupt:
-    #     sys.stdout.flush()
-    #     warn(message="\rOUCH !\nIt's time to sleep X - X")
+    except KeyboardInterrupt:
+        sys.stdout.flush()
+        warn(message="\rOUCH !\nIt's time to sleep X - X")
 
-    # except Exception as e:
-    #     error(funcName="main" ,message=f"An error occured: {e}")
+    except Exception as e:
+        error(funcName="main" ,message=f"An error occured: {e}")
 
-    # finally:
-    #     requestor.dispose()
+    finally:
+        requestor.dispose()

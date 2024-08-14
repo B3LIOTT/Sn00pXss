@@ -133,3 +133,13 @@ def get_config(path):
 
     return config
 
+
+def print_config(config):
+    first = True
+    print("="*60)
+    for k, v in config.items():
+        print("-"*60)
+        print(f"{k}: {v}")
+    
+    print("-"*60)
+    print("="*60)

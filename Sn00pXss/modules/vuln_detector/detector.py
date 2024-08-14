@@ -203,14 +203,14 @@ def detect_xss(requestor: Requestor, requestModel: RequestModel):
     """ 
 
     big_info(message=f"Detecting XSS for attack type : {requestModel.attackType.name}")
-    # try:
-    assert(requestModel.is_vector_defined())
-    assert(requestModel.is_attack_defined())
-    
-    fuzz(requestor, requestModel)
+    try:
+        assert(requestModel.is_vector_defined())
+        assert(requestModel.is_attack_defined())
+        
+        fuzz(requestor, requestModel)
 
-    # except Exception as e:
-    #     error(funcName="detect_xss", message=str(e))
+    except Exception as e:
+        error(funcName="detect_xss", message=str(e))
 
 
     return 
