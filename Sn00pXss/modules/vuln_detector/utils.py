@@ -272,12 +272,12 @@ def build_INJECT_EVENT_payload(requestModel: RequestModel, filterModel: FilterMo
         else:
             newIndex = lastTestedPayload.referredIndex+1
         
-        eventIndex = newIndex // len(HTML_EVENTS)
-        if newIndex >= len(BASE_PAYLOADS['INJECT_EVENT']): return
+        injectDBindex = newIndex // len(HTML_EVENTS)
+        if injectDBindex >= len(BASE_PAYLOADS['INJECT_EVENT']): return
         
-        event = HTML_EVENTS[eventIndex % len(HTML_EVENTS)]
+        event = HTML_EVENTS[newIndex % len(HTML_EVENTS)]
 
-        payload = BASE_PAYLOADS['INJECT_EVENT'][newIndex]
+        payload = BASE_PAYLOADS['INJECT_EVENT'][injectDBindex]
         payload_str = f"{TEST_INPUT}{payload['payload']}EOP"
 
         payload_str = payload_str.replace("EVENT", event)
@@ -298,7 +298,7 @@ def build_INJECT_EVENT_payload(requestModel: RequestModel, filterModel: FilterMo
     newPayload = update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.escapeChar)
     if not newPayload: 
         failedData.clear()
-        return build_ESCAPE_HTML_payload(requestModel, failedData, lastTestedPayload, failedData)
+        return build_INJECT_EVENT_payload(requestModel, failedData, lastTestedPayload, failedData)
 
     return newPayload
 

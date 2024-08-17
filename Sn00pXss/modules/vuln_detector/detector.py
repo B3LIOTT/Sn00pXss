@@ -41,7 +41,9 @@ def send_payload_by_input(requestor: Requestor, requestModel: RequestModel, payl
 
 
 def send_payload_by_url(requestor: Requestor, requestModel: RequestModel, payload: str):
-    requestor.send_request(requestModel=requestModel, url=f"{requestModel.url}/?{requestModel.vector.value}={payload}")
+    url = f"{requestModel.url}/?{requestModel.vector.value}={payload}"
+    info(message=f"Url: {url}")
+    requestor.send_request(requestModel=requestModel, url=url)
 
 
 def send_payload_by_cookies(requestor: Requestor, requestModel: RequestModel, payload: str):
