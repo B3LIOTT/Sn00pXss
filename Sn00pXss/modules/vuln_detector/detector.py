@@ -185,7 +185,7 @@ def analyse_fail(result, usedPayload: Payload, filterModel: FilterModel, failedD
             elif usedPayload.usedChars[k] == "ARGS":
                 data["type"] = "ARGS"
                 data["value"] = ucr
-            
+
             else:
                 data["type"] = "CHAR"
                 data["value"] = ucr

