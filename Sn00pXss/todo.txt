@@ -2,40 +2,6 @@
 
 - payloads all the things
 
+- algo de détection de vecteurs d'attaques
 
-quand on ajoute un payload on fait:
-- expected = ...
-- got = ...
-
-et si le expected != got alors on a potentiellement une XSS
-    => si on a une potentielle xss, on test des payloads, et on regarde le comportement
-
-
-Pour le vecteur dans le dom html
-- verifier si on peut injecter des balises html (tester avec une toute simple comme objet ou a ou h1)
- => si oui, continuer en regardant les balises interessantes
- => si non, on abandonne, on passe au prochain vecteur
-
-
-sauvegarder les filtres et les payloads fonctionnels dans un fichier lié au lien, comme sqlmap
-
-
-Payload de base pour chaque technique (ESCAPE_JS, ESCAPE_HTML, INJECT_HTML):
-
-'; alert("xss dom based"); var dummy= '
-
-" /> <script>alert("xss dom based")</script><balise d'origine 
-
-<script>alert("xss dom based")</script>
-
-A partir desquels on peut construire des payloads plus complexes selon les filtres
-
-
-while next_payload(data):
-    ...
-
-
-
-AMELIORER LES CHANGEMENTS DE FONCTIONS ET D'ARGS
-
-IL FAUT ENVOYER UN MESSAGE POUR TRIGGER L'ALERT DANS CH19
+- controller le chrome driver en fonction des events pour INJECT_EVENT (bouger la souris pour mousemove par exemple)
