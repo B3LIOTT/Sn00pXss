@@ -1,3 +1,4 @@
+from selenium.webdriver.common.action_chains import ActionChains
 import base64 as b64
 
 
@@ -64,9 +65,35 @@ USEFUL_JS_FUNCTION = [
 ]
 
 HTML_EVENTS = [
-    "test1",
-    "test2",
+    # Keyboard events
+    "onkeydown",
+    "onkeypress",
+    "onkeyup",
+    # Mouse events
     "onmouseover",
+    "onmouseout",
+    "onmousedown",
+    "onmouseup",
+    "onclick"
 ]
+
+
+def get_action_chains(driver, event, element):
+    if "mouse" in event:
+        actions = ActionChains(driver)
+        # go to a position
+        actions.move_by_offset(100, 200).click_and_hold().perform()
+        # move down
+        actions.move_by_offset(0, 50).perform()
+        # move up
+        actions.move_by_offset(0, -100).perform()
+        # go to the element (to be over it)
+        actions.move_to_element(element).perform()
+    
+    elif "key" in event:
+        ActionChains(driver).send_keys("A").perform()
+
+    elif "click" in event:
+        ActionChains(driver).click(element).perform()
 
         
