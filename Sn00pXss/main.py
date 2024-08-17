@@ -126,7 +126,7 @@ if __name__ == '__main__':
         # attacks = [(AttackType.ESCAPE_HTML, '')]
 
         # test 4
-        attacks = [(AttackType.INJECT_EVENT, "'")]
+        attacks = [(AttackType.INJECT_EVENT, None)]
 
         for attack in attacks:
             # set attack type
