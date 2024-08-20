@@ -73,7 +73,7 @@ def detect_payload_position(requestor: Requestor, requestModel: RequestModel, se
     if TEST_INPUT in page_source:
         start_index = page_source.index(TEST_INPUT)
         bingo(message=f"Payload position expected at index {start_index}")
-        # TODO: detect the html tag where the payload is located
+
         return start_index
     
     else:
@@ -142,13 +142,18 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
         if requestModel.affects is not None:
             requestor.get_affected()
 
+        result = None
         if requestModel.attackType == AttackType.INJECT_EVENT:
-            # get_actions_from_event(
-            #     driver=requestor.driver, 
-            #     event=payload.event,
-            #     element=
-            # )
-            raise NotImplementedError("Event injection not implemented yet")
+            # Detect the html tag where the payload is located
+            quote = '"' if "'" in payload.usedChars else "'"
+            result = requestor.driver.page_source[expected_position_start:get_end_position(expected_position_start, requestor.driver.page_source)]
+            element = requestor.driver.find_element(By.XPATH, f"""//*[contains(text(), {quote}{result}{quote})]""")
+  
+            get_actions_from_event(
+                driver=requestor.driver, 
+                event=payload.event,
+                element=element
+            )
 
         if payload.payloadType == PayloadType.ALERT:
             # check if alert is present
@@ -162,7 +167,8 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
                 warn(message="No alert triggered")
 
                 # get the payload in the response
-                result = requestor.driver.page_source[expected_position_start:get_end_position(expected_position_start, requestor.driver.page_source)]
+                if not result:
+                    result = requestor.driver.page_source[expected_position_start:get_end_position(expected_position_start, requestor.driver.page_source)]
                 warn(message=f"Server responded with payload : {result}\n->  Analysing why the payload failed...\n")
                 analyse_fail(result=result, usedPayload=payload, filterModel=filterModel, failedData=failedData)
         

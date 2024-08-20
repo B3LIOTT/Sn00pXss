@@ -1,6 +1,7 @@
 from selenium.webdriver.common.action_chains import ActionChains
 import base64 as b64
 from models import HtmlEvent
+from modules.logger import error
 
 
 # Special characters
@@ -81,21 +82,24 @@ HTML_EVENTS = [
 
 
 def get_actions_from_event(driver, event: HtmlEvent, element):
-    if event == HtmlEvent.MOUSE:
-        actions = ActionChains(driver)
-        # go to a position
-        actions.move_by_offset(100, 200).click_and_hold().perform()
-        # move down
-        actions.move_by_offset(0, 50).perform()
-        # move up
-        actions.move_by_offset(0, -100).perform()
-        # go to the element (to be over it)
-        actions.move_to_element(element).perform()
+    try:
+        if event == HtmlEvent.MOUSE:
+            actions = ActionChains(driver)
+            # TODO: fix out of bounds error and "no size and location" error
+            # move down
+            actions.move_by_offset(0, 5).perform()
+            # # move up
+            actions.move_by_offset(0, -5).perform()
+
+            # go to the element (to be over it)
+            #actions.move_to_element(element).perform()
+        
+        elif event == HtmlEvent.KEY:
+            ActionChains(driver).send_keys("A").perform()
+
+        elif event == HtmlEvent.CLICK:
+            ActionChains(driver).click(element).perform()
     
-    elif event == HtmlEvent.KEY:
-        ActionChains(driver).send_keys("A").perform()
-
-    elif event == HtmlEvent.CLICK:
-        ActionChains(driver).click(element).perform()
-
+    except Exception as e:
+        error(funcName='get_actions_from_event', message=f"An error occured during the event action: {e}")
         
