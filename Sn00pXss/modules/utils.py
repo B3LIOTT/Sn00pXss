@@ -1,5 +1,6 @@
 from selenium.webdriver.common.action_chains import ActionChains
 import base64 as b64
+from models import HtmlEvent
 
 
 # Special characters
@@ -66,20 +67,21 @@ USEFUL_JS_FUNCTION = [
 
 HTML_EVENTS = [
     # Keyboard events
-    "onkeydown",
-    "onkeypress",
-    "onkeyup",
+    ("onkeydown", HtmlEvent.KEY),
+    ("onkeypress", HtmlEvent.KEY),
+    ("onkeyup", HtmlEvent.KEY),
     # Mouse events
-    "onmouseover",
-    "onmouseout",
-    "onmousedown",
-    "onmouseup",
-    "onclick"
+    ("onclick", HtmlEvent.CLICK),
+    ("onmousedown", HtmlEvent.MOUSE),
+    ("onmousemove", HtmlEvent.MOUSE),
+    ("onmouseout", HtmlEvent.MOUSE),
+    ("onmouseover", HtmlEvent.MOUSE),
+    ("onmouseup", HtmlEvent.MOUSE),
 ]
 
 
-def get_action_chains(driver, event, element):
-    if "mouse" in event:
+def get_actions_from_event(driver, event: HtmlEvent, element):
+    if event == HtmlEvent.MOUSE:
         actions = ActionChains(driver)
         # go to a position
         actions.move_by_offset(100, 200).click_and_hold().perform()
@@ -90,10 +92,10 @@ def get_action_chains(driver, event, element):
         # go to the element (to be over it)
         actions.move_to_element(element).perform()
     
-    elif "key" in event:
+    elif event == HtmlEvent.KEY:
         ActionChains(driver).send_keys("A").perform()
 
-    elif "click" in event:
+    elif event == HtmlEvent.CLICK:
         ActionChains(driver).click(element).perform()
 
         

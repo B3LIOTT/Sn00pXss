@@ -275,12 +275,12 @@ def build_INJECT_EVENT_payload(requestModel: RequestModel, filterModel: FilterMo
         injectDBindex = newIndex // len(HTML_EVENTS)
         if injectDBindex >= len(BASE_PAYLOADS['INJECT_EVENT']): return
         
-        event = HTML_EVENTS[newIndex % len(HTML_EVENTS)]
+        event = HTML_EVENTS[newIndex % len(HTML_EVENTS)]  # get event as (event_name, event_type)
 
         payload = BASE_PAYLOADS['INJECT_EVENT'][injectDBindex]
         payload_str = f"{TEST_INPUT}{payload['payload']}EOP"
 
-        payload_str = payload_str.replace("EVENT", event)
+        payload_str = payload_str.replace("EVENT", event[0])
 
         # TODO: generate payloads for alert and fetch 
         payload_str = payload_str.replace("FUNCTION", "alert")
@@ -293,7 +293,7 @@ def build_INJECT_EVENT_payload(requestModel: RequestModel, filterModel: FilterMo
         replace_list_element(usedCharsReplaced, 'ARGS', 'xss')
         # ---------------------------------------------------------------------
 
-        return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced, referredIndex=newIndex)
+        return Payload(value=payload_str, payloadType=payloadType, usedChars=payload['used_chars'], usedCharsReplaced=usedCharsReplaced, referredIndex=newIndex, event=event[1])
 
     newPayload = update_payload_with_failed_data(lastTestedPayload, failedData, requestModel.escapeChar)
     if not newPayload: 

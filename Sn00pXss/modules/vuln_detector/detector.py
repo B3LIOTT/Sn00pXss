@@ -4,10 +4,11 @@ from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoAlertPresentException, UnexpectedAlertPresentException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from models import RequestModel, FilterModel, PayloadType, Payload, CookieException
+from models import RequestModel, FilterModel, PayloadType, Payload, CookieException, AttackType
 from modules.requestor.requestor import Requestor
 from modules.logger import info, error, bingo, warn, big_info
 from .utils import get_payload_generator, TEST_INPUT
+from modules.utils import get_actions_from_event
 from time import sleep
 
 
@@ -72,6 +73,7 @@ def detect_payload_position(requestor: Requestor, requestModel: RequestModel, se
     if TEST_INPUT in page_source:
         start_index = page_source.index(TEST_INPUT)
         bingo(message=f"Payload position expected at index {start_index}")
+        # TODO: detect the html tag where the payload is located
         return start_index
     
     else:
@@ -139,6 +141,14 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
         # request the page which is affected by the payload (if not the same)
         if requestModel.affects is not None:
             requestor.get_affected()
+
+        if requestModel.attackType == AttackType.INJECT_EVENT:
+            # get_actions_from_event(
+            #     driver=requestor.driver, 
+            #     event=payload.event,
+            #     element=
+            # )
+            raise NotImplementedError("Event injection not implemented yet")
 
         if payload.payloadType == PayloadType.ALERT:
             # check if alert is present

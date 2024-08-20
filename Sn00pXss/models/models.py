@@ -115,14 +115,24 @@ class PayloadType(Enum):
     REQUEST_BIN = "REQUEST_BIN"
 
 
+class HtmlEvent(Enum):
+    """
+    Enumerates the different HTML events categories
+    """
+    KEY = 0
+    MOUSE = 1
+    CLICK = 2
+
+
 class Payload:
     """
     This class represents the payload to be sent to the target
     """
     
-    def __init__(self, payloadType: PayloadType, value: str, usedChars: list, usedCharsReplaced: list, referredIndex: int):
+    def __init__(self, payloadType: PayloadType, value: str, usedChars: list, usedCharsReplaced: list, referredIndex: int, event: HtmlEvent=None):
         self.payloadType = payloadType
         self.value = value
         self.usedChars = usedChars
         self.usedCharsReplaced = usedCharsReplaced
         self.referredIndex = referredIndex
+        self.event = event
