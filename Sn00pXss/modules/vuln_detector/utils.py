@@ -48,11 +48,11 @@ BASE_PAYLOADS = {
     ],
     "INJECT_EVENT": [
         {
-            "payload": """"EVENT=FUNCTION(`ARGS`)""",
+            "payload": """"EVENT="FUNCTION(`ARGS`)""",
             "used_chars": ['"', "=", "`", "(", ")" , "FUNCTION", "ARGS"]
         },
         {
-            "payload": """'EVENT=FUNCTION(`ARGS`)""",
+            "payload": """'EVENT='FUNCTION(`ARGS`)""",
             "used_chars": ["'", "=", "`", "(", ")" , "FUNCTION", "ARGS"]
         },
     ]

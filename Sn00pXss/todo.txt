@@ -5,3 +5,9 @@
 - algo de détection de vecteurs d'attaques
 
 - controller le chrome driver en fonction des events pour INJECT_EVENT (bouger la souris pour mousemove par exemple)
+
+- ajouter le attack type dans la config:
+    > quand on rentre la config manuellement, la detection de veteur remplis le fichiers de config
+    > ensuite plus besoin de lancer la detection de vecteur car il est inscrit dans la config
+
+AttackTypes dans la config: dict {clé=attackType : valeur=escapeChar}

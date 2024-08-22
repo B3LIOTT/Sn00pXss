@@ -1,5 +1,7 @@
 affects: null
 url: http://challenge01.root-me.org/web-client/ch19/
+attack_types: 
+  ESCAPE_HTML: ''
 misc_inputs:
   titre: name
   message: name

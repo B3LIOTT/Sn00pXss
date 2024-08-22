@@ -230,6 +230,5 @@ def detect_xss(requestor: Requestor, requestModel: RequestModel):
     except Exception as e:
         error(funcName="detect_xss", message=str(e))
 
-
     return 
 

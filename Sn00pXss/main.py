@@ -113,24 +113,14 @@ if __name__ == '__main__':
         rm.set_vector(vector=vector)
 
 
-        # TODO: alg to detect the attack type
+        # TODO: alg to detect the attack type, and add it to the config file
+        # detect_attack_type(...)
+
         # TODO: detect which tech is used (for example, detect if it's Angular)
-        
-        # test 1
-        # attacks = [(AttackType.ESCAPE_JS, "'")]
-        
-        # test 2
-        # attacks = [(AttackType.INJECT_HTML, None)]
 
-        # test 3
-        # attacks = [(AttackType.ESCAPE_HTML, '')]
-
-        # test 4
-        attacks = [(AttackType.INJECT_EVENT, None)]
-
-        for attack in attacks:
+        for attack_type, escape_char in config['attack_types'].items():
             # set attack type
-            rm.set_attack(attackType=attack[0], escapeChar=attack[1])
+            rm.set_attack(attackType=AttackType(attack_type), escapeChar=escape_char)
 
             # detect xss
             detect_xss(requestor=requestor, requestModel=rm)

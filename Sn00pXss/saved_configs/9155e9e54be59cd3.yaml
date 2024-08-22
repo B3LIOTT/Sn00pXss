@@ -1,5 +1,7 @@
 affects: null
 url: http://challenge01.root-me.org/web-client/ch32/
+attack_types:
+  ESCAPE_JS: "'"
 misc_inputs: {}
 vector:
   isCookies: false
