@@ -36,7 +36,7 @@ It has been tested only on the following challenges:
 - XSS DOM based Introduction -> "http://challenge01.root-me.org/web-client/ch32/"
 - XSS Stored 1 -> "http://challenge01.root-me.org/web-client/ch18/"
 - XSS Stored 2 -> "http://challenge01.root-me.org/web-client/ch19/"
-- XSS Volatile -> "http://challenge01.root-me.org/web-client/ch26/"
+- XSS Volatile (no working yet) -> "http://challenge01.root-me.org/web-client/ch26/"
  
 """
 
