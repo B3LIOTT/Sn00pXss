@@ -1,5 +1,6 @@
 from modules.vuln_detector import detect_xss
 from modules.filter_detector import detect_filters
+from modules.vector_detector import detect_attack_type
 from models import RequestModel, AttackType, AttackVector
 from selenium.webdriver.common.by import By
 from modules.requestor import Requestor
@@ -114,7 +115,7 @@ if __name__ == '__main__':
 
 
         # TODO: alg to detect the attack type, and add it to the config file
-        # detect_attack_type(...)
+        detect_attack_type(requestor=requestor, requestModel=rm)
 
         # TODO: detect which tech is used (for example, detect if it's Angular)
 

@@ -92,7 +92,7 @@ def get_actions_from_event(driver, event: HtmlEvent, element):
             actions.move_by_offset(0, -5).perform()
 
             # go to the element (to be over it)
-            #actions.move_to_element(element).perform()
+            # actions.move_to_element(element).perform()
         
         elif event == HtmlEvent.KEY:
             ActionChains(driver).send_keys("A").perform()

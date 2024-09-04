@@ -2,7 +2,7 @@ from models import RequestModel
 from modules.requestor.requestor import Requestor
 
 
-def detect(requestor: Requestor, requestModel: RequestModel):
+def detect_attack_type(requestor: Requestor, requestModel: RequestModel):
     # TODO
     pass
 
