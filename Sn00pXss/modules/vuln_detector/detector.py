@@ -7,86 +7,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from models import RequestModel, FilterModel, PayloadType, Payload, CookieException, AttackType
 from modules.requestor.requestor import Requestor
 from modules.logger import info, error, bingo, warn, big_info
-from .utils import get_payload_generator, TEST_INPUT
-from modules.utils import get_actions_from_event
+from .utils import get_payload_generator
+from modules.utils import get_actions_from_event, send_payload_by_input, send_payload_by_url, send_payload_by_cookies, send, detect_payload_position, TEST_INPUT
 from time import sleep
 
-
-
-def send(requestor: Requestor, requestModel: RequestModel, vulnerableInput = None):
-    # write data in other required inputs 
-    if requestModel.miscInputs is not None:
-        for key, value in requestModel.miscInputs.items():
-            input = requestor.driver.find_element(value, key)
-            input.send_keys("This is random data")
-
-    if requestModel.vector.submit_with_button():
-        # submit the form by clicking the button if we need to (= if ENTER is not enough)
-        submit = requestor.driver.find_element(requestModel.vector.submitButtonType, requestModel.vector.submitButtonValue)
-        submit.click()
-
-    elif requestModel.vector.isVectorCookies:
-        # if the vector is a cookie, we need to refresh the page to apply the cookie
-        requestor.send_request(requestModel=requestModel)
-
-    elif vulnerableInput is not None:
-        vulnerableInput.send_keys(Keys.ENTER)
-
-
-def send_payload_by_input(requestor: Requestor, requestModel: RequestModel, payload: str):
-    # write the payload in the vulnerable input
-    input = requestor.driver.find_element(requestModel.vector.type, requestModel.vector.value)
-    input.send_keys(payload)
-
-    send(requestor, requestModel, vulnerableInput=input)
-
-
-def send_payload_by_url(requestor: Requestor, requestModel: RequestModel, payload: str):
-    url = f"{requestModel.url}/?{requestModel.vector.value}={payload}"
-    info(message=f"Url: {url}")
-    requestor.send_request(requestModel=requestModel, url=url)
-
-
-def send_payload_by_cookies(requestor: Requestor, requestModel: RequestModel, payload: str):
-    cookie_vector_key = requestModel.vector.value
-    #requestModel.set_cookie(key=cookie_vector_key, value=payload)
-    requestor.set_cookies({cookie_vector_key: payload})
-
-    send(requestor, requestModel)
-
-
-
-def detect_payload_position(requestor: Requestor, requestModel: RequestModel, send_payload: callable):
-    """
-    Detect the position of the payload in the page
-    """
-    send_payload(requestor=requestor, requestModel=requestModel, payload=TEST_INPUT)
-
-    # request the page which is affected by the payload (if not the same)
-    if requestModel.affects is not None:
-        requestor.get_affected()
-
-    # get the page source
-    page_source = requestor.driver.page_source
-
-    # check if the payload is in the page source
-    if TEST_INPUT in page_source:
-        start_index = page_source.index(TEST_INPUT)
-        bingo(message=f"Payload position expected at index {start_index}")
-
-        return start_index
-    
-    else:
-        error(funcName="detect_payload_position", message="Payload not detected in the page, maybe the page is not affected by the payload.\nVerify if you put the right affected page.")
-        requestor.dispose()
-        exit(1)
-
-    
-def get_end_position(start_index: int, page_source: str):
-    """
-    Get the end position of the payload
-    """
-    return page_source.index("EOP", start_index)
 
 
 def fuzz(requestor: Requestor, requestModel: RequestModel):

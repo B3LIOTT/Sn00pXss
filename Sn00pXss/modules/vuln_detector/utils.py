@@ -59,10 +59,6 @@ BASE_PAYLOADS = {
 }
 
 
-TEST_INPUT = "ABCDEFGHb3liottHGFEDCBA"
-
-
-
 def replace_list_element(l: list, old: str, new: str) -> list: l[l.index(old)] = new
 
 def union(l1: list, l2: list) -> list:
