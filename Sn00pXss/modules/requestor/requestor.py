@@ -17,12 +17,13 @@ class Requestor:
     This class is responsible for sending requests to the target
     """
 
-    def __init__(self):
+    def __init__(self, display: bool):
         chrome_driver_path = os.getenv("CHROME_DRIVER_PATH")
         options = Options()
         options.binary_location = os.getenv("CHROME_BINARY_PATH")
         options.add_argument('--incognito')
-        options.add_argument("--headless")  # comment this line to see the browser
+        if not display:
+            options.add_argument("--headless")
         service = Service(chrome_driver_path)
 
         self.driver = webdriver.Chrome(service=service, options=options)
