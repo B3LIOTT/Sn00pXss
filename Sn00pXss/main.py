@@ -4,7 +4,7 @@ from modules.vector_detector import detect_attack_type
 from models import RequestModel, AttackType, AttackVector
 from selenium.webdriver.common.by import By
 from modules.requestor import Requestor
-from modules.logger import error, info, bingo, warn
+from modules.logger import error, info, bingo, warn, big_info
 from utils import get_args, get_params, save_config, config_already_exists, get_config, print_config
 import sys
 
@@ -33,12 +33,16 @@ ban = """
 """
 
 info_ban = """This tool isn't finished yet, for instance it doesn't support the AUTO method.
+Moreover, the request-bin feature is not implemented yet.
+
 It has been tested only on the following challenges:
 - XSS DOM based Introduction -> "http://challenge01.root-me.org/web-client/ch32/"
 - XSS Stored 1 -> "http://challenge01.root-me.org/web-client/ch18/"
 - XSS Stored 2 -> "http://challenge01.root-me.org/web-client/ch19/"
 - XSS Volatile (no working yet) -> "http://challenge01.root-me.org/web-client/ch26/"
  
+ Note: to also test theses challenges, you need to have a valid account on root-me.org and be connected.
+
 """
 
 
@@ -52,7 +56,7 @@ if __name__ == '__main__':
     warn(message=info_ban)
 
     try:
-        url, affected = get_args()
+        url, affected, display = get_args()
 
         # check if the configuration already exists
         cae = config_already_exists(url, affected)
@@ -62,7 +66,7 @@ if __name__ == '__main__':
             info("Do you want to continue with this configuration ?")
             if input("[y/n] -> ").lower() != 'y':
                 # Ask user for attack vector / type...
-                config = get_params()
+                config = get_params(url, affected)
 
                 if not config:
                     # AUTO vector detection
@@ -88,7 +92,7 @@ if __name__ == '__main__':
     print_config(config)     
 
     try:
-        requestor = Requestor()
+        requestor = Requestor(display)
         requestor.clear_alerts()
 
         rm = RequestModel(
@@ -113,9 +117,10 @@ if __name__ == '__main__':
 
         rm.set_vector(vector=vector)
 
-
-        # TODO: alg to detect the attack type, and add it to the config file
-        detect_attack_type(requestor=requestor, requestModel=rm)
+        if not 'attack_types' in config:
+            big_info(message="No attack type specified, the tool will try to detect it.")
+            # TODO: alg to detect the attack type, and add it to the config file
+            detect_attack_type(requestor=requestor, requestModel=rm)
 
         # TODO: detect which tech is used (for example, detect if it's Angular)
 
