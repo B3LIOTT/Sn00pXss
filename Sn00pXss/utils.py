@@ -33,10 +33,11 @@ def get_args() -> list:
     parser = argparse.ArgumentParser(description='Sn00pXss - XSS detection tool')
     parser.add_argument('-u', '--url', type=str, help='Un argument optionnel', required=True)
     parser.add_argument('-a', '--affects', type=str, help='Url which could be affected by an XSS', required=False)
+    #parser.add_argument('-d', '--display', action='store_true', help='Display the browser', required=False)
 
     args = parser.parse_args()
 
-    return args.url, args.affects
+    return args.url, args.affects, False#args.display
 
 
 def get_params(url, affected):
