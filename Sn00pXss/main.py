@@ -117,7 +117,7 @@ if __name__ == '__main__':
 
         rm.set_vector(vector=vector)
 
-        if not 'attack_types' in config:
+        if 'attack_types' in config:
             big_info(message="No attack type specified, the tool will try to detect it.")
             # TODO: alg to detect the attack type, and add it to the config file
             detect_attack_type(requestor=requestor, requestModel=rm)

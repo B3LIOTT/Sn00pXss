@@ -122,7 +122,7 @@ def send(requestor: Requestor, requestModel: RequestModel, vulnerableInput = Non
     if requestModel.miscInputs is not None:
         for key, value in requestModel.miscInputs.items():
             input = requestor.driver.find_element(value, key)
-            input.send_keys("This is random data")
+            input.send_keys("Th1s 1s r4ndom d4t4")
 
     if requestModel.vector.submit_with_button():
         # submit the form by clicking the button if we need to (= if ENTER is not enough)

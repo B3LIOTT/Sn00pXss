@@ -15,7 +15,7 @@ from time import sleep
 
 def fuzz(requestor: Requestor, requestModel: RequestModel):
     """
-    Tests appropriate subset of payloads, based on filters
+    Tests appropriate subset of payloads, and checks if the website is vulnerable to XSS
     """
     filterModel = FilterModel()
 
@@ -36,7 +36,7 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
 
     while payload:=next_payload(requestModel, filterModel, payload, failedData):
 
-        # TODO: remove
+        # ------------
         # input(f"\nPress enter to continue...\n")
         # ------------
 

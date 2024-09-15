@@ -38,6 +38,12 @@ class Requestor:
             except Exception:
                 raise CookieException(f"Cookie ({name}:{value}) not set. It might contains some special characters which makes the cookie invalid, or try again to ensure that the browser had the time to set cookies.")
 
+    def get_cookies(self):
+        try:
+            return self.driver.get_cookies()
+        except Exception as e:
+            error(funcName='get_cookies', message=str(e))
+            return []
 
     def send_request(self, requestModel: RequestModel, url=None):
         try:
