@@ -56,7 +56,7 @@ def fuzz(requestor: Requestor, requestModel: RequestModel):
             continue
 
         except Exception as e:
-            error(funcName="fuzz (send_payload)", message=f"Error for {payload.value}: {e}")
+            error(funcName="fuzz", message=f"Error for {payload.value}: {e}")
             continue
 
         # wait for the page to load

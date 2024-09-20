@@ -1,4 +1,4 @@
-from .detector import detect_attack_type
+from .detector import detect_attack_type, detect_vectors
 from .utils import *
 
 """

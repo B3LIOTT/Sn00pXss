@@ -31,7 +31,7 @@ By_possibilities_str = """[1] - By.ID
 
 def get_args() -> list:
     parser = argparse.ArgumentParser(description='Sn00pXss - XSS detection tool')
-    parser.add_argument('-u', '--url', type=str, help='Un argument optionnel', required=True)
+    parser.add_argument('-u', '--url', type=str, help='Url where you want to find XSS', required=True)
     parser.add_argument('-a', '--affects', type=str, help='Url which could be affected by an XSS', required=False)
     #parser.add_argument('-d', '--display', action='store_true', help='Display the browser', required=False)
 
@@ -127,12 +127,21 @@ def save_config(url, affects, config):
     with open(path, 'w') as file:
         yaml.dump(config, file, default_flow_style=False)
 
+    return path
+
 
 def get_config(path):
     with open(path, 'r') as file:
         config = yaml.safe_load(file)
 
     return config
+
+
+def add_attack_types_to_config(path, attack_types):
+    config = get_config(path)
+    config['attack_types'] = attack_types
+    with open(path, 'w') as file:
+        yaml.dump(config, file, default_flow_style=False)
 
 
 def print_config(config):

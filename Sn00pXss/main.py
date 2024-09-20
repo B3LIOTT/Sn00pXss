@@ -5,7 +5,7 @@ from models import RequestModel, AttackType, AttackVector
 from selenium.webdriver.common.by import By
 from modules.requestor import Requestor
 from modules.logger import error, info, bingo, warn, big_info
-from utils import get_args, get_params, save_config, config_already_exists, get_config, print_config
+from utils import get_args, get_params, save_config, config_already_exists, get_config, print_config, add_attack_types_to_config
 import sys
 
 
@@ -77,7 +77,7 @@ if __name__ == '__main__':
         
         else:
             config = get_params(url, affected)
-            save_config(url, affected, config)
+            path = save_config(url, affected, config)
 
     except KeyboardInterrupt:
         sys.stdout.flush()
@@ -117,12 +117,15 @@ if __name__ == '__main__':
 
         rm.set_vector(vector=vector)
 
-        if 'attack_types' in config:
+        if 'attack_types' not in config:
             big_info(message="No attack type specified, the tool will try to detect it.")
             # TODO: alg to detect the attack type, and add it to the config file
-            detect_attack_type(requestor=requestor, requestModel=rm)
+            config['attack_types'] = detect_attack_type(requestor=requestor, requestModel=rm)
 
-        # TODO: detect which tech is used (for example, detect if it's Angular)
+            # save the attack types to the config file
+            add_attack_types_to_config(path, config['attack_types'])
+            
+            # TODO: detect which tech is used (for example, detect if it's Angular)
 
         for attack_type, escape_char in config['attack_types'].items():
             # set attack type

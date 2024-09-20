@@ -11,3 +11,5 @@
     > ensuite plus besoin de lancer la detection de vecteur car il est inscrit dans la config
 
 AttackTypes dans la config: dict {clé=attackType : valeur=escapeChar}
+
+Réussir à detecter en mode auto les vecteurs dans l'url

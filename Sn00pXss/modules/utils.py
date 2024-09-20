@@ -11,9 +11,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from models import RequestModel, FilterModel, PayloadType, Payload, CookieException, AttackType
 from modules.requestor.requestor import Requestor
 from modules.logger import info, error, bingo, warn, big_info
+from random import randint
 
-
-TEST_INPUT = "ABCDEFGHb3liottHGFEDCBA"
+TEST_INPUT = f"ABCDEFGHb3liottHGFEDCBA{randint(1000, 9999)}"
 
 # Special characters
 SPECIAL_CHARS = {
@@ -113,8 +113,6 @@ def get_actions_from_event(driver, event: HtmlEvent, element):
     
     except Exception as e:
         error(funcName='get_actions_from_event', message=f"An error occured during the event action: {e}")
-
-
 
 
 def send(requestor: Requestor, requestModel: RequestModel, vulnerableInput = None):

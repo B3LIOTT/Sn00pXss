@@ -1,9 +1,9 @@
 affects: null
-url: http://challenge01.root-me.org/web-client/ch32/
 attack_types:
-  ESCAPE_JS: "'"
+  ESCAPE_JS: ''''
 misc_inputs: {}
+url: http://challenge01.root-me.org/web-client/ch32/
 vector:
-  isCookies: false
   by: name
+  isCookies: false
   name: number
